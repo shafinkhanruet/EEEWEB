@@ -8,6 +8,7 @@ const introSound = new Howl({
   src: ['https://assets.mixkit.co/sfx/preview/mixkit-epic-orchestra-transition-2290.mp3'],
   volume: 0.7,
   loop: false,
+  preload: false, // Don't preload to avoid blocking initial load
   onloaderror: () => {
     console.error('Failed to load sound');
   },
@@ -21,6 +22,7 @@ const logoRevealSound = new Howl({
   src: ['https://assets.mixkit.co/sfx/preview/mixkit-cinematic-transition-blast-1047.mp3'],
   volume: 0.6,
   loop: false,
+  preload: false, // Don't preload to avoid blocking initial load
 });
 
 // Keyframes animations for premium cinematic effects
@@ -398,123 +400,155 @@ const SplashScreen = ({ onComplete }) => {
   const controls = useAnimation();
 
   useEffect(() => {
-    // Set up cinematic elements (floating decoration)
-    const elements = Array.from({ length: 12 }, (_, i) => {
-      const size = 20 + Math.random() * 120;
-      const pos = getRandomPosition(size);
-      return {
-        id: i,
-        width: size,
-        height: Math.random() * 50 + 15,
-        x: pos.x,
-        y: pos.y,
-        opacity: Math.random() * 0.3 + 0.1,
-        rotate: Math.random() * 360,
-        duration: 15 + Math.random() * 20
-      };
-    });
-    setCinematicElements(elements);
-    
-    // Create particles with more cinematic properties
-    const newParticles = Array.from({ length: 80 }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: Math.random() * 5 + 2 + 'px',
-      scale: Math.random() * 0.6 + 0.3,
-      color: i % 5 === 0 ? '#e50914' : i % 8 === 0 ? '#ff9500' : i % 12 === 0 ? '#3cf0ff' : '#ffffff',
-      duration: 3 + Math.random() * 5,
-      delay: Math.random() * 2,
-    }));
-    setParticles(newParticles);
-    
-    // Create circuit lines that connect
-    const newCircuits = Array.from({ length: 25 }, (_, i) => {
-      const startAngle = Math.random() * 360;
-      const length = 50 + Math.random() * 150;
-      return {
-        id: i,
-        x: Math.random() * 80 + 10, // percentage of screen
-        y: Math.random() * 80 + 10, // percentage of screen
-        width: length + 'px',
-        angle: startAngle,
-        color: i % 3 === 0 ? 'rgba(229, 9, 20, 0.8)' : i % 5 === 0 ? 'rgba(60, 240, 255, 0.5)' : 'rgba(255, 255, 255, 0.3)',
-        delay: i * 0.15
-      };
-    });
-    setCircuits(newCircuits);
-    
-    // Split tagline for letter animation
-    setTagLineLetters("PREMIUM EXPERIENCE".split(''));
-    
-    // Play intro sound
-    try {
-      introSound.play();
-      
-      // Play logo reveal sound after a delay
-      setTimeout(() => {
-        logoRevealSound.play();
-      }, 1200);
-    } catch (error) {
-      console.error('Error playing sound:', error);
-    }
-
-    // Show tagline after animation starts
-    setTimeout(() => {
-      setTagLineVisible(true);
-      
-      // Animate underline after letters appear
-      if (tagLineRef.current) {
-        tagLineRef.current.style.setProperty('--after-width', '100%');
-      }
-    }, 1500);
-    
-    // Animate logo glow
-    setTimeout(() => {
-      if (logoGlowRef.current) {
-        controls.start({
-          opacity: [0, 0.9, 0.6],
-          scale: [0.5, 1.4, 1.2],
-          transition: { duration: 2, ease: "easeOut" }
-        });
-      }
-    }, 1200);
-
-    const duration = 6000; // Longer duration for more cinematic impact
-    const interval = 20;
-    const steps = duration / interval;
-    const increment = 100 / steps;
-    
-    let startTime = Date.now();
-    
-    const progressInterval = setInterval(() => {
-      const elapsedTime = Date.now() - startTime;
-      const calculatedProgress = Math.min(100, (elapsedTime / duration) * 100);
-      
-      // Add easing to the progress bar for more cinematic feel
-      const easedProgress = Math.pow(calculatedProgress / 100, 0.65) * 100;
-      setProgress(easedProgress);
-      
-      if (calculatedProgress >= 100) {
-        clearInterval(progressInterval);
-      }
-    }, interval);
-
-    const timer = setTimeout(() => {
+    // Ensure the splash screen completes even if there are errors
+    const forceCompletionTimer = setTimeout(() => {
+      console.log('Force completing splash screen');
       setIsVisible(false);
       onComplete && onComplete();
-    }, duration);
-
-    return () => {
-      clearTimeout(timer);
-      clearInterval(progressInterval);
+    }, 8000); // Force completion after 8 seconds maximum
+    
+    try {
+      // Set up cinematic elements (floating decoration)
+      const elements = Array.from({ length: 12 }, (_, i) => {
+        const size = 20 + Math.random() * 120;
+        const pos = getRandomPosition(size);
+        return {
+          id: i,
+          width: size,
+          height: Math.random() * 50 + 15,
+          x: pos.x,
+          y: pos.y,
+          opacity: Math.random() * 0.3 + 0.1,
+          rotate: Math.random() * 360,
+          duration: 15 + Math.random() * 20
+        };
+      });
+      setCinematicElements(elements);
+      
+      // Create particles with more cinematic properties
+      const newParticles = Array.from({ length: 80 }, (_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: Math.random() * 5 + 2 + 'px',
+        scale: Math.random() * 0.6 + 0.3,
+        color: i % 5 === 0 ? '#e50914' : i % 8 === 0 ? '#ff9500' : i % 12 === 0 ? '#3cf0ff' : '#ffffff',
+        duration: 3 + Math.random() * 5,
+        delay: Math.random() * 2,
+      }));
+      setParticles(newParticles);
+      
+      // Create circuit lines that connect
+      const newCircuits = Array.from({ length: 25 }, (_, i) => {
+        const startAngle = Math.random() * 360;
+        const length = 50 + Math.random() * 150;
+        return {
+          id: i,
+          x: Math.random() * 80 + 10, // percentage of screen
+          y: Math.random() * 80 + 10, // percentage of screen
+          width: length + 'px',
+          angle: startAngle,
+          color: i % 3 === 0 ? 'rgba(229, 9, 20, 0.8)' : i % 5 === 0 ? 'rgba(60, 240, 255, 0.5)' : 'rgba(255, 255, 255, 0.3)',
+          delay: i * 0.15
+        };
+      });
+      setCircuits(newCircuits);
+      
+      // Split tagline for letter animation
+      setTagLineLetters("PREMIUM EXPERIENCE".split(''));
+      
+      // Play intro sound
       try {
-        introSound.stop();
-        logoRevealSound.stop();
+        introSound.once('load', function() {
+          introSound.play();
+        });
+        introSound.load();
+        
+        // Play logo reveal sound after a delay
+        setTimeout(() => {
+          try {
+            logoRevealSound.once('load', function() {
+              logoRevealSound.play();
+            });
+            logoRevealSound.load();
+          } catch (soundError) {
+            console.error('Error playing logo sound:', soundError);
+          }
+        }, 1200);
       } catch (error) {
-        console.error('Error stopping sound:', error);
+        console.error('Error playing intro sound:', error);
       }
-    };
+
+      // Show tagline after animation starts
+      setTimeout(() => {
+        setTagLineVisible(true);
+        
+        // Animate underline after letters appear
+        if (tagLineRef.current) {
+          tagLineRef.current.style.setProperty('--after-width', '100%');
+        }
+      }, 1500);
+      
+      // Animate logo glow
+      setTimeout(() => {
+        if (logoGlowRef.current) {
+          controls.start({
+            opacity: [0, 0.9, 0.6],
+            scale: [0.5, 1.4, 1.2],
+            transition: { duration: 2, ease: "easeOut" }
+          });
+        }
+      }, 1200);
+
+      const duration = 6000; // Longer duration for more cinematic impact
+      const interval = 20;
+      const steps = duration / interval;
+      const increment = 100 / steps;
+      
+      let startTime = Date.now();
+      
+      const progressInterval = setInterval(() => {
+        const elapsedTime = Date.now() - startTime;
+        const calculatedProgress = Math.min(100, (elapsedTime / duration) * 100);
+        
+        // Add easing to the progress bar for more cinematic feel
+        const easedProgress = Math.pow(calculatedProgress / 100, 0.65) * 100;
+        setProgress(easedProgress);
+        
+        if (calculatedProgress >= 100) {
+          clearInterval(progressInterval);
+        }
+      }, interval);
+
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+        onComplete && onComplete();
+        clearTimeout(forceCompletionTimer); // Clear the force completion timer since we're completing normally
+      }, duration);
+
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(forceCompletionTimer);
+        clearInterval(progressInterval);
+        try {
+          introSound.stop();
+          logoRevealSound.stop();
+        } catch (error) {
+          console.error('Error stopping sound:', error);
+        }
+      };
+    } catch (error) {
+      console.error('Error in SplashScreen:', error);
+      // If we encounter a critical error, still ensure we complete the splash screen
+      setTimeout(() => {
+        setIsVisible(false);
+        onComplete && onComplete();
+      }, 1000);
+      
+      return () => {
+        clearTimeout(forceCompletionTimer);
+      };
+    }
   }, [onComplete, controls]);
 
   return (

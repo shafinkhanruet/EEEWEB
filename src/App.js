@@ -81,39 +81,74 @@ const BackgroundContainer = React.memo(() => (
 
 function App() {
   const location = useLocation();
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(false); // Start with splash disabled by default
   const [contentReady, setContentReady] = useState(false);
+  const [splashError, setSplashError] = useState(false);
   
   // Control when to show the navbar and other elements
   const [showUI, setShowUI] = useState(false);
   
   useEffect(() => {
+    // Safety timeout - ensure content is shown after 8 seconds regardless of splash screen
+    const safetyTimer = setTimeout(() => {
+      if (!contentReady) {
+        console.log('Safety timeout triggered - forcing app to show content');
+        setSplashError(true);
+        setShowSplash(false);
+        setShowUI(true);
+        setContentReady(true);
+      }
+    }, 8000);
+
     // Check if user has seen the splash screen before
     const hasSeenSplash = sessionStorage.getItem('hasSeenSplash');
     
     if (hasSeenSplash) {
+      // Skip splash if already seen
       setShowSplash(false);
       setShowUI(true);
       setContentReady(true);
+    } else {
+      // Show splash only if not seen before
+      setShowSplash(true);
     }
+    
+    return () => clearTimeout(safetyTimer);
   }, []);
 
   // Handle splash screen completion
   const handleSplashComplete = () => {
-    // Mark that user has seen the splash screen in this session
-    sessionStorage.setItem('hasSeenSplash', 'true');
-    
-    setShowSplash(false);
-    
-    // Slight delay before showing UI elements
-    setTimeout(() => {
+    try {
+      // Mark that user has seen the splash screen in this session
+      sessionStorage.setItem('hasSeenSplash', 'true');
+      
+      setShowSplash(false);
+      
+      // Slight delay before showing UI elements
+      setTimeout(() => {
+        setShowUI(true);
+      }, 300);
+      
+      // Delay before showing content to ensure smooth transition
+      setTimeout(() => {
+        setContentReady(true);
+      }, 500);
+    } catch (error) {
+      console.error('Error in splash completion:', error);
+      // Ensure the app continues to function even if there's an error
+      setShowSplash(false);
       setShowUI(true);
-    }, 300);
-    
-    // Delay before showing content to ensure smooth transition
-    setTimeout(() => {
       setContentReady(true);
-    }, 500);
+    }
+  };
+
+  // Handle errors in the splash screen
+  const handleSplashError = () => {
+    console.error('Splash screen encountered an error');
+    setSplashError(true);
+    setShowSplash(false);
+    setShowUI(true);
+    setContentReady(true);
   };
 
   // Create a simple sound context value with disabled functionality
@@ -145,7 +180,12 @@ function App() {
       <TransitionStyle />
       <SoundContext.Provider value={soundContextValue}>
         <AppContainer>
-          {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
+          {showSplash && (
+            <ErrorBoundary onError={handleSplashError}>
+              <SplashScreen onComplete={handleSplashComplete} />
+            </ErrorBoundary>
+          )}
+          
           <BackgroundContainer />
           
           <AnimatePresence>
@@ -187,16 +227,19 @@ function App() {
                     </Routes>
                   </PageTransition>
                 </Suspense>
-              ) : null}
+              ) : (
+                // Show a loading spinner while waiting for content
+                <LoadingSpinner />
+              )}
             </AnimatePresence>
           </MainContent>
           
           <AnimatePresence>
-            {showUI && (
+            {showUI && contentReady && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
               >
                 <Footer />
               </motion.div>
@@ -206,6 +249,30 @@ function App() {
       </SoundContext.Provider>
     </ThemeProvider>
   );
+}
+
+// Simple error boundary for handling splash screen errors
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+  
+  componentDidCatch(error, errorInfo) {
+    console.error("ErrorBoundary caught an error:", error, errorInfo);
+    this.props.onError && this.props.onError();
+  }
+  
+  render() {
+    if (this.state.hasError) {
+      return null; // Render nothing if there's an error
+    }
+    return this.props.children;
+  }
 }
 
 export default App;
