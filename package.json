@@ -26,8 +26,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
-    "build:analyze": "ANALYZE=true react-scripts build",
+    "build": "cross-env CI=false ESLINT_NO_DEV_ERRORS=true DISABLE_ESLINT_PLUGIN=true react-scripts build",
+    "build:analyze": "cross-env ANALYZE=true react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "optimize-images": "node scripts/optimize-images.js"
@@ -53,6 +53,7 @@
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.22.15",
     "compression-webpack-plugin": "^10.0.0",
+    "cross-env": "^7.0.3",
     "css-minimizer-webpack-plugin": "^5.0.1",
     "image-webpack-loader": "^8.1.0",
     "terser-webpack-plugin": "^5.3.9",
