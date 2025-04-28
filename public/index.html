@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1a1a2e" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="description" content="EEEFlix - Your gateway to finding rollmates, building friendships, and growing in EEE together" />
+    <meta name="keywords" content="EEE, RUET, Electrical Engineering, Electronic Engineering, Student Directory" />
+    <meta name="author" content="EEE Student, RUET" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Preload critical fonts - only most essential weights -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&display=swap&subset=bengali" as="style">
+    
+    <!-- Load fonts with display=swap for better performance -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500&family=Hind+Siliguri:wght@400;500;600&display=swap&subset=bengali" rel="stylesheet">
+    
+    <!-- Direct load of Hind Siliguri for Bengali text -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&display=swap&subset=bengali" rel="stylesheet">
+    
+    <!-- Fallback for font loading -->
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500&family=Hind+Siliguri:wght@400;500;600&display=swap&subset=bengali" rel="stylesheet">
+    </noscript>
+    
+    <!-- Inline critical CSS to avoid render blocking -->
+    <style>
+      /* Critical CSS for initial render */
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Poppins', sans-serif;
+        background-color: #040911;
+        color: #ffffff;
+        overflow-x: hidden;
+      }
+      
+      #root {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      /* Loading spinner styles */
+      .loading-spinner {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #040911;
+        z-index: 9999;
+      }
+      
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(30, 87, 177, 0.3);
+        border-radius: 50%;
+        border-top-color: #1E57B1;
+        animation: spin 1s ease-in-out infinite;
+      }
+      
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      
+      /* Bangla font styling */
+      [lang="bn"] {
+        font-family: 'Hind Siliguri', sans-serif !important;
+        font-weight: 500;
+        letter-spacing: 0.03em;
+        line-height: 2;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      /* Ensure better text rendering for all elements */
+      * {
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+    </style>
+    
+    <!-- Add resource hints for performance -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    
+    <!-- Cache control meta tag -->
+    <meta http-equiv="Cache-Control" content="max-age=86400" />
+    
+    <title>EEEFlix - Premium EEE Platform</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root">
+      <!-- Fallback loading spinner -->
+      <div class="loading-spinner">
+        <div class="spinner"></div>
+      </div>
+    </div>
+    
+    <!-- Add browser hints for performance optimizations -->
+    <script type="module">
+      // Tell browser which parts of the page are important
+      document.addEventListener('DOMContentLoaded', () => {
+        // Ensure Bengali fonts are properly loaded
+        document.fonts.ready.then(() => {
+          console.log('Fonts are loaded and ready');
+          document.body.classList.add('fonts-loaded');
+        });
+        
+        if ('connection' in navigator) {
+          // Only add resource hints if on slow connections
+          if (navigator.connection.effectiveType === 'slow-2g' || 
+              navigator.connection.effectiveType === '2g' ||
+              navigator.connection.saveData) {
+            // Defer non-critical resources
+            const deferImages = () => {
+              const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+              if ('IntersectionObserver' in window) {
+                const imageObserver = new IntersectionObserver((entries) => {
+                  entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                      const img = entry.target;
+                      img.src = img.dataset.src;
+                      imageObserver.unobserve(img);
+                    }
+                  });
+                });
+                
+                lazyImages.forEach(img => imageObserver.observe(img));
+              }
+            };
+            
+            // Call the function after a delay
+            setTimeout(deferImages, 1000);
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
