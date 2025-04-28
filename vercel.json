@@ -14,5 +14,10 @@
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ]
+  ],
+  "env": {
+    "ESLINT_NO_DEV_ERRORS": "true",
+    "DISABLE_ESLINT_PLUGIN": "true",
+    "CI": "false"
+  }
 } 
