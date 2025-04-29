@@ -241,22 +241,22 @@ const TopTenText = styled(motion.span)`
 `;
 
 const HeroDescription = styled(motion.p)`
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   color: ${props => props.theme.colors.textSecondary};
-  line-height: 1.6;
+  line-height: 1.7;
   margin: 0.5rem 0;
   max-width: 550px;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
   transform-origin: left;
   
   @media (max-width: ${props => props.theme.breakpoints.tablet}) {
-    font-size: 1rem;
-    line-height: 1.5;
+    font-size: 1.1rem;
+    line-height: 1.6;
   }
   
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    font-size: 0.95rem;
-    line-height: 1.4;
+    font-size: 1rem;
+    line-height: 1.5;
     margin: 0.25rem 0;
   }
 `;
@@ -299,7 +299,7 @@ const Tags = styled.span`
 `;
 
 const HighlightedSection = styled(motion.span)`
-  background: linear-gradient(90deg, #E50914, #FF5F6D);
+  background: ${props => props.theme.colors.gradientAccent};
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
   color: white;
@@ -307,7 +307,7 @@ const HighlightedSection = styled(motion.span)`
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   display: inline-block;
   margin-right: 0.5rem;
-  box-shadow: 0 2px 8px rgba(229, 9, 20, 0.4);
+  box-shadow: ${props => props.theme.shadows.accentGlow};
   transform-origin: left;
   position: relative;
   overflow: hidden;
@@ -319,12 +319,7 @@ const HighlightedSection = styled(motion.span)`
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(
-      135deg, 
-      transparent, 
-      rgba(255, 255, 255, 0.2), 
-      transparent
-    );
+    background: ${props => props.theme.colors.gradientShimmer};
     transform: rotate(45deg);
     animation: shimmer 3s infinite;
   }
@@ -798,13 +793,12 @@ const Hero = () => {
               variants={highlightVariants}
               whileHover="hover"
             >
-              Exclusively for A Section Students!
+              Premium Experience
             </HighlightedSection> 
             <motion.span variants={textVariants}>
-              Join the brilliant minds of the Electrical and Electronics Engineering (EEE) 
-              department at RUET as they uncover hidden truths about the mysterious forces 
-              shaping the future of technology. Explore the challenges, discoveries, and 
-              breakthroughs that will define the next generation of engineers.
+              Welcome to the exclusive platform for Electrical and Electronics Engineering 
+              students at RUET. Discover exceptional profiles, premium resources, and connect 
+              with the brilliant minds of A Section.
             </motion.span>
           </HeroDescription>
           
