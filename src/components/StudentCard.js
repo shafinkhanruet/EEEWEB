@@ -8,119 +8,285 @@ const CardContainer = styled(motion.div)`
   position: relative;
   width: 280px;
   height: 400px;
-  border-radius: 24px;
+  border-radius: 12px;
   overflow: hidden;
-  background: linear-gradient(
-    135deg,
-    rgba(17, 17, 17, 0.9) 0%,
-    rgba(25, 25, 25, 0.8) 100%
-  );
+  background: #141414;
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(40, 40, 40, 0.5);
   box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(255, 255, 255, 0.05),
-    inset 0 0 80px rgba(229, 9, 20, 0.06);
+    0 20px 40px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(80, 80, 80, 0.2);
   cursor: pointer;
   padding: 0;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: center;
   isolation: isolate;
+  animation: netflixFloat 6s ease-in-out infinite;
+  z-index: 1;
 
+  /* Netflix signature red border glow */
   &:before {
     content: '';
     position: absolute;
     inset: -1px;
     background: linear-gradient(
-      45deg,
-      rgba(229, 9, 20, 0.6),
-      rgba(255, 255, 255, 0.1),
-      rgba(229, 9, 20, 0.6)
+      90deg,
+      rgba(229, 9, 20, 0.7),
+      rgba(40, 40, 40, 0.2),
+      rgba(229, 9, 20, 0.7)
     );
-    border-radius: 24px;
+    border-radius: 12px;
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask-composite: xor;
     -webkit-mask-composite: xor;
     padding: 1px;
     pointer-events: none;
-    transition: all 0.4s ease;
-    animation: borderGlow 3s infinite;
+    animation: netflixBorderGlow 3s infinite, netflixBorderRotate 6s linear infinite;
+    opacity: 1;
+    z-index: 2;
   }
 
+  /* Netflix overlay gradient */
   &:after {
     content: '';
     position: absolute;
     inset: 0;
     background: radial-gradient(
-      circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-      rgba(229, 9, 20, 0.2),
-      transparent 40%
+      circle at 50% 50%,
+      rgba(229, 9, 20, 0.15) 0%,
+      transparent 70%
     );
-    opacity: 0;
-    transition: opacity 0.3s;
     z-index: 2;
-    mix-blend-mode: soft-light;
+    mix-blend-mode: overlay;
+    opacity: 0.8;
+    animation: netflixPulse 4s ease-in-out infinite;
+  }
+  
+  /* Netflix reflection effect */
+  .netflix-reflection {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.03) 20%,
+      rgba(255, 255, 255, 0.04) 40%,
+      transparent 60%
+    );
+    z-index: 3;
+    animation: netflixReflection 6s ease-in-out infinite;
+    opacity: 0.6;
+    pointer-events: none;
   }
 
-  .bottom-shadow {
+  /* Netflix vignette effect */
+  .netflix-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 60%,
+      rgba(0, 0, 0, 0.4) 100%
+    );
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0.8;
+  }
+
+  /* Netflix scanline effect */
+  .netflix-scanline {
+    position: absolute;
+    width: 120%;
+    height: 8px;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(229, 9, 20, 0.1) 10%,
+      rgba(229, 9, 20, 0.5) 50%,
+      rgba(229, 9, 20, 0.1) 90%,
+      transparent 100%
+    );
+    opacity: 0.3;
+    filter: blur(1px);
+    z-index: 4;
+    left: -10%;
+    top: -20%;
+    animation: netflixScanline 4s linear infinite;
+    pointer-events: none;
+  }
+
+  /* Netflix bottom glow */
+  .netflix-bottom-glow {
     position: absolute;
     bottom: -40px;
     left: 50%;
-    transform: translateX(-50%) translateY(var(--shadow-y, 0));
+    transform: translateX(-50%);
     width: 90%;
     height: 40px;
     background: radial-gradient(
-      ellipse at var(--mouse-x, 50%) 0%,
+      ellipse at 50% 0%,
       rgba(229, 9, 20, 0.5),
       rgba(0, 0, 0, 0) 70%
     );
-    opacity: 0;
-    transition: all 0.3s ease;
+    opacity: 0.6;
     filter: blur(8px);
+    z-index: 0;
+    animation: netflixBottomGlow 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  /* Netflix border effect */
+  .netflix-border {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    background: linear-gradient(
+      90deg,
+      rgba(229, 9, 20, 0.5), 
+      rgba(255, 255, 255, 0.1), 
+      rgba(229, 9, 20, 0.5)
+    ) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask-composite: exclude;
+    animation: netflixBorderRotate 10s linear infinite;
+    z-index: 5;
+    pointer-events: none;
+  }
+  
+  /* Netflix outer glow - signature red */
+  .netflix-outer-glow {
+    position: absolute;
+    inset: -3px;
+    border-radius: 14px;
+    background: radial-gradient(
+      circle at 50% 50%,
+      rgba(229, 9, 20, 0.4) 0%,
+      transparent 70%
+    );
+    filter: blur(10px);
+    opacity: 0.5;
     z-index: -1;
+    animation: netflixOuterGlow 4s ease-in-out infinite;
+    pointer-events: none;
   }
 
   &:hover {
-    transform: translateY(-12px) scale(1.02);
+    transform: scale(1.05);
     box-shadow: 
-      0 30px 60px rgba(0, 0, 0, 0.5),
-      0 0 40px rgba(229, 9, 20, 0.4),
-      0 0 0 1px rgba(229, 9, 20, 0.2),
-      inset 0 0 80px rgba(229, 9, 20, 0.3);
-
-    .bottom-shadow {
-      opacity: 1;
-      --shadow-y: ${props => props.isBottomHovered ? '-10px' : '0'};
-      background: radial-gradient(
-        ellipse at var(--mouse-x, 50%) 0%,
-        ${props => props.isBottomHovered ? 'rgba(229, 9, 20, 0.8)' : 'rgba(229, 9, 20, 0.5)'},
-        rgba(0, 0, 0, 0) 70%
-      );
-      width: ${props => props.isBottomHovered ? '95%' : '90%'};
+      0 30px 60px rgba(0, 0, 0, 0.8),
+      0 0 40px rgba(229, 9, 20, 0.3),
+      inset 0 0 0 1px rgba(229, 9, 20, 0.3);
+    transition: all 0.3s cubic-bezier(0.2, 0.85, 0.4, 1.275);
+    
+    .netflix-outer-glow {
+      opacity: 0.8;
+      filter: blur(15px);
     }
-
-    &:after {
-      opacity: 1;
+    
+    .netflix-border {
+      background: linear-gradient(
+        90deg,
+        rgba(229, 9, 20, 0.8), 
+        rgba(255, 255, 255, 0.2), 
+        rgba(229, 9, 20, 0.8)
+      ) border-box;
+      animation: netflixBorderRotate 4s linear infinite;
     }
 
     &:before {
       background: linear-gradient(
-        45deg,
-        rgba(229, 9, 20, 0.8),
-        rgba(255, 255, 255, 0.2),
-        rgba(229, 9, 20, 0.8)
+        90deg,
+        rgba(229, 9, 20, 0.9),
+        rgba(255, 255, 255, 0.3),
+        rgba(229, 9, 20, 0.9)
       );
-      filter: brightness(1.3) contrast(1.3);
+      filter: brightness(1.5);
+      animation: netflixBorderGlow 2s infinite, netflixBorderRotate 3s linear infinite;
+    }
+    
+    &:after {
+      opacity: 1;
     }
   }
 
-  @keyframes borderGlow {
+  @keyframes netflixBorderGlow {
     0%, 100% {
-      filter: brightness(1) blur(0px);
+      filter: brightness(1) blur(0.5px);
     }
     50% {
-      filter: brightness(1.3) blur(2px);
+      filter: brightness(1.5) blur(1.5px);
+    }
+  }
+
+  @keyframes netflixBorderRotate {
+    0% {
+      background-position: 0% 0%;
+    }
+    100% {
+      background-position: 200% 0%;
+    }
+  }
+
+  @keyframes netflixFloat {
+    0%, 100% {
+      transform: translateY(0) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-6px) rotate(0.3deg);
+    }
+  }
+
+  @keyframes netflixPulse {
+    0%, 100% {
+      opacity: 0.6;
+      transform: scale(0.98);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(1.02);
+    }
+  }
+  
+  @keyframes netflixReflection {
+    0% {
+      transform: translateX(-100%) rotate(10deg);
+    }
+    100% {
+      transform: translateX(200%) rotate(10deg);
+    }
+  }
+  
+  @keyframes netflixBottomGlow {
+    0%, 100% {
+      opacity: 0.5;
+      width: 85%;
+    }
+    50% {
+      opacity: 0.7;
+      width: 95%;
+    }
+  }
+  
+  @keyframes netflixOuterGlow {
+    0%, 100% {
+      opacity: 0.4;
+      filter: blur(8px);
+    }
+    50% {
+      opacity: 0.6;
+      filter: blur(12px);
+    }
+  }
+  
+  @keyframes netflixScanline {
+    0% {
+      top: -20%;
+    }
+    100% {
+      top: 120%;
     }
   }
 `;
@@ -512,7 +678,12 @@ const StudentCard = ({ student, delay = 0, playSound }) => {
         onMouseMove={handleMouseMove}
         isBottomHovered={isBottomHovered}
       >
-        <div className="bottom-shadow" />
+        <div className="netflix-outer-glow" />
+        <div className="netflix-border" />
+        <div className="netflix-reflection" />
+        <div className="netflix-vignette" />
+        <div className="netflix-scanline" />
+        <div className="netflix-bottom-glow" />
         <ImageContainer>
           {!imageError && imagePath ? (
             <ProfileImage 
