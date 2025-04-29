@@ -193,12 +193,12 @@ const Features = () => {
   // Throttle sound events to reduce callback frequency
   const handleCardHover = useCallback(
     throttle(() => {
-      if (playSound && typeof playSound === 'function') {
-        try {
+      try {
+        if (playSound && typeof playSound === 'function') {
           playSound('hover');
-        } catch (error) {
-          console.error('Error playing sound:', error);
         }
+      } catch (error) {
+        console.error('Error playing sound:', error);
       }
     }, 500),
     [playSound]

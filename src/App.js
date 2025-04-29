@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useState, useEffect, useContext } from 'react';
+import React, { lazy, Suspense, useState, useEffect, useContext, useCallback } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import styled, { ThemeProvider, createGlobalStyle } from 'styled-components';
@@ -96,6 +96,16 @@ const App = () => {
   // Sound context state
   const [soundEnabled, setSoundEnabled] = useState(false);
   
+  // Define playSound function
+  const playSound = useCallback((soundType) => {
+    // Only play sound if enabled
+    if (!soundEnabled) return;
+    
+    // No-op function for now to fix the error
+    console.log('Sound played:', soundType);
+    // Implement actual sound playing logic here if needed
+  }, [soundEnabled]);
+  
   useEffect(() => {
     // Immediately start loading the main content
     setContentReady(true);
@@ -165,7 +175,7 @@ const App = () => {
 
   return (
     <ThemeProvider theme={darkTheme}>
-      <SoundContext.Provider value={{ soundEnabled, setSoundEnabled }}>
+      <SoundContext.Provider value={{ soundEnabled, setSoundEnabled, playSound }}>
         <NavbarProvider>
           <AppContainer>
             {/* Global styles */}

@@ -230,11 +230,23 @@ const Footer = () => {
   const { playSound } = useContext(SoundContext);
   
   const handleMouseEnter = () => {
-    playSound('hover');
+    try {
+      if (playSound && typeof playSound === 'function') {
+        playSound('hover');
+      }
+    } catch (error) {
+      console.error('Error playing hover sound:', error);
+    }
   };
   
   const handleClick = () => {
-    playSound('click');
+    try {
+      if (playSound && typeof playSound === 'function') {
+        playSound('click');
+      }
+    } catch (error) {
+      console.error('Error playing click sound:', error);
+    }
   };
 
   return (
