@@ -3,8 +3,9 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { FaUsers, FaGraduationCap, FaLaptopCode, FaBookOpen } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import { throttle } from '../utils/helpers';
-import { SoundContext } from '../contexts/SoundContext';
+import { SoundContext, useSoundContext } from '../contexts/SoundContext';
 
 const FeaturesContainer = styled.div`
   display: grid;
@@ -113,6 +114,26 @@ const FeatureDescription = styled.p`
 
 // Individual feature card as a memoized component for better performance
 const Feature = React.memo(({ feature, onMouseEnter }) => {
+  const navigate = useNavigate();
+  
+  const handleCardClick = (link) => {
+    if (link) {
+      // Navigate and then scroll to top
+      navigate(link);
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Safely handle mouse enter event
+  const handleMouseEnter = () => {
+    if (onMouseEnter && typeof onMouseEnter === 'function') {
+      onMouseEnter();
+    }
+  };
+
   return (
     <FeatureCard
       initial={{ opacity: 0, y: 20 }}
@@ -122,7 +143,9 @@ const Feature = React.memo(({ feature, onMouseEnter }) => {
         transition: { duration: 0.6 }
       }}
       viewport={{ once: true, margin: "-50px" }}
-      onMouseEnter={onMouseEnter}
+      onMouseEnter={handleMouseEnter}
+      onClick={() => feature.link && handleCardClick(feature.link)}
+      style={feature.link ? { cursor: 'pointer' } : {}}
     >
       <IconContainer className="icon-container">
         {feature.icon}
@@ -137,7 +160,7 @@ const Feature = React.memo(({ feature, onMouseEnter }) => {
 Feature.displayName = 'Feature';
 
 const Features = () => {
-  const { playSound } = useContext(SoundContext);
+  const { playSound } = useSoundContext();
   
   const featuresList = [
     {
@@ -151,6 +174,7 @@ const Features = () => {
       icon: <FaGraduationCap />,
       title: 'Academic Resources',
       description: 'Access course materials, lecture notes, and academic resources to support your studies in Electrical & Electronic Engineering.',
+      link: '/resources'
     },
     {
       id: 3,
@@ -169,8 +193,12 @@ const Features = () => {
   // Throttle sound events to reduce callback frequency
   const handleCardHover = useCallback(
     throttle(() => {
-      if (playSound) {
-        playSound('hover');
+      if (playSound && typeof playSound === 'function') {
+        try {
+          playSound('hover');
+        } catch (error) {
+          console.error('Error playing sound:', error);
+        }
       }
     }, 500),
     [playSound]
