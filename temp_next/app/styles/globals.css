@@ -43,6 +43,9 @@
   --radius-large: 12px;
   --radius-xl: 20px;
   --radius-round: 50%;
+
+  /* Add optimizations for Android and other mobile devices */
+  --app-height: 100%;
 }
 
 * {
@@ -55,6 +58,11 @@ html {
   scroll-behavior: smooth;
   scrollbar-width: thin;
   scrollbar-color: var(--accent-color) var(--background-dark);
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  touch-action: manipulation;
 }
 
 body {
@@ -74,6 +82,10 @@ body {
   line-height: 1.6;
   font-size: 16px;
   letter-spacing: 0.3px;
+  width: 100%;
+  height: var(--app-height);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -249,4 +261,66 @@ img {
 .visible {
   opacity: 1;
   pointer-events: auto;
+}
+
+/* Ensure proper height on mobile browsers */
+@supports (-webkit-touch-callout: none) {
+  body, html {
+    height: -webkit-fill-available;
+  }
+}
+
+/* Mobile input focus */
+input, textarea, select, button {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* Prevent zooming when focusing on inputs */
+@media screen and (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px;
+  }
+}
+
+/* Improve button interactions on touch devices */
+button, [role="button"] {
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+/* Add safe area insets for notched phones */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Smooth scrolling on mobile with momentum-based scrolling */
+.scroll-container {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  overflow-y: auto;
+}
+
+/* Fast tap for mobile */
+a, button {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+/* Fix 100vh issue on mobile browsers */
+@media screen and (max-width: 768px) {
+  .full-height {
+    height: var(--app-height);
+  }
+}
+
+/* Media query for smaller devices */
+@media screen and (max-width: 480px) {
+  html {
+    font-size: 14px;
+  }
 } 

@@ -40,7 +40,7 @@ const Nav = styled(motion.nav)`
   };
 
   @media (max-width: 768px) {
-    padding: 1rem 1.5rem;
+    padding: 0.8rem 1.2rem;
   }
 `;
 
@@ -217,10 +217,18 @@ const MobileMenu = styled(motion.div)`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 2.5rem;
+  gap: 2rem;
   z-index: ${({ theme }) => theme.zIndex.modal};
   padding: 2rem;
   backdrop-filter: blur(10px);
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  overscroll-behavior: contain; /* Prevent scroll chain */
+  
+  /* Support for notched phones */
+  padding-top: max(2rem, env(safe-area-inset-top));
+  padding-bottom: max(2rem, env(safe-area-inset-bottom));
+  padding-left: max(2rem, env(safe-area-inset-left));
+  padding-right: max(2rem, env(safe-area-inset-right));
 `;
 
 const MobileMenuItem = styled(motion.div)`
@@ -294,14 +302,38 @@ const NavbarPremium = () => {
     };
 
     window.addEventListener('scroll', handleScroll);
+    
+    // Fix for 100vh in mobile browsers
+    const appHeight = () => {
+      const doc = document.documentElement;
+      doc.style.setProperty('--app-height', `${window.innerHeight}px`);
+    };
+    
+    window.addEventListener('resize', appHeight);
+    appHeight();
+    
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', appHeight);
     };
   }, []);
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
+    
+    // Prevent background scrolling when menu is open
+    if (!mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
   };
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    document.body.style.overflow = '';
+  }, [pathname]);
 
   const navItems = [
     { name: 'Home', path: '/' },

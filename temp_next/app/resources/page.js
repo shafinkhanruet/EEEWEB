@@ -4,7 +4,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { FaDownload, FaBook, FaVideo, FaLightbulb, FaUsers, FaClipboard } from 'react-icons/fa';
+import { FaDownload, FaBook, FaVideo, FaLightbulb, FaUsers, FaClipboard, FaExternalLinkAlt, FaGoogleDrive } from 'react-icons/fa';
 
 const PageContainer = styled.div`
   padding: 120px 3rem 5rem;
@@ -126,6 +126,77 @@ const ResourceLink = styled(Link)`
   }
 `;
 
+const DriveLinksSection = styled.section`
+  max-width: 1200px;
+  margin: 4rem auto 0;
+  background: ${({ theme }) => theme.colors.cardBackground};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  padding: 2rem;
+  box-shadow: ${({ theme }) => theme.shadows.medium};
+  border: 1px solid rgba(255, 255, 255, 0.05);
+`;
+
+const SectionTitle = styled.h2`
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  position: relative;
+  padding-bottom: 0.5rem;
+  
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: ${({ theme }) => theme.colors.gradientGold};
+  }
+`;
+
+const DriveList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const DriveLink = styled.a`
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem;
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+  border-left: 3px solid ${({ theme }) => theme.colors.accent};
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+    
+    svg {
+      color: ${({ theme }) => theme.colors.textPrimary};
+    }
+  }
+  
+  svg {
+    color: ${({ theme }) => theme.colors.accent};
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+  }
+`;
+
+const DriveLinkText = styled.span`
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.textSecondary};
+`;
+
+const ExternalIcon = styled(FaExternalLinkAlt)`
+  margin-left: auto;
+  font-size: 0.9rem !important;
+  opacity: 0.7;
+`;
+
 const ResourcesPage = () => {
   const resources = [
     {
@@ -235,6 +306,31 @@ const ResourcesPage = () => {
           ))}
         </ResourceGrid>
       </motion.div>
+      
+      <DriveLinksSection>
+        <SectionTitle>Class Materials</SectionTitle>
+        <DriveList>
+          <DriveLink 
+            href="https://drive.google.com/drive/u/1/folders/1inaXCLgG1NGOFzu4h2yUz0_mszfd-Mf-" 
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaGoogleDrive />
+            <DriveLinkText>SIFAT EEE-A 2301002</DriveLinkText>
+            <ExternalIcon />
+          </DriveLink>
+          
+          <DriveLink 
+            href="https://drive.google.com/drive/folders/1EU3B6I-VUCbLunJpch5FlqhrDyiFpaKM?fbclid=IwY2xjawGMndtleHRuA2FlbQIxMAABHZa1ImA77ZrHSb_RLYstFj8hN88oso5qhV__L4Wmzd5t2qXoHt72O7-raA_aem_eyvGkCpWig83vZa3celANw" 
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FaGoogleDrive />
+            <DriveLinkText>1-1 (Firoz 2201075)</DriveLinkText>
+            <ExternalIcon />
+          </DriveLink>
+        </DriveList>
+      </DriveLinksSection>
     </PageContainer>
   );
 };

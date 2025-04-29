@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import Link from 'next/link';
+import { FaArrowRight, FaFilm, FaBookOpen, FaEllipsisV } from 'react-icons/fa';
 
 // Components will be imported here
 
@@ -65,32 +66,119 @@ const ButtonGroup = styled(motion.div)`
   gap: ${({ theme }) => theme.spacing.md};
   justify-content: center;
   flex-wrap: wrap;
+  margin-bottom: 2rem;
 `;
 
-const PrimaryButton = styled(motion.button)`
+const Button = styled(motion.a)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.8rem 1.8rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  text-decoration: none;
+  
+  &:hover {
+    transform: translateY(-3px) scale(1.05);
+  }
+  
+  svg {
+    transition: transform 0.3s ease;
+  }
+  
+  &:hover svg {
+    transform: translateX(4px);
+  }
+`;
+
+const PrimaryButton = styled(Button)`
   background: ${({ theme }) => theme.colors.gradientButton};
   color: white;
-  border: none;
-  padding: ${({ theme }) => theme.spacing.md} ${({ theme }) => theme.spacing.lg};
-  border-radius: ${({ theme }) => theme.borderRadius.medium};
-  font-weight: 600;
-  cursor: pointer;
-  transition: ${({ theme }) => theme.transitions.medium};
-  box-shadow: ${({ theme }) => theme.shadows.medium};
+  box-shadow: 0 10px 20px rgba(229, 9, 20, 0.3);
   
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: ${({ theme }) => theme.shadows.buttonGlow};
+    box-shadow: 0 15px 25px rgba(229, 9, 20, 0.4);
   }
 `;
 
-const SecondaryButton = styled(PrimaryButton)`
-  background: transparent;
+const SecondaryButton = styled(Button)`
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
   border: 2px solid ${({ theme }) => theme.colors.accent};
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
   
   &:hover {
-    background: ${({ theme }) => theme.colors.accentSoft};
+    background: rgba(229, 9, 20, 0.1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
   }
+`;
+
+const ResourcesButton = styled(motion.div)`
+  margin-top: 1.5rem;
+`;
+
+const VerticalDots = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  height: 24px;
+`;
+
+const Dot = styled.div`
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: white;
+  margin: 2px 0;
+`;
+
+const PulsingButton = styled(Button)`
+  background: ${({ theme }) => theme.colors.gold};
+  color: white;
+  padding: 1rem 2.5rem;
+  font-size: 1.2rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(229, 9, 20, 0.4);
+  
+  &:hover {
+    box-shadow: 0 15px 30px rgba(229, 9, 20, 0.5);
+  }
+  
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, transparent 1%, rgba(255, 255, 255, 0.15) 1%) center/15000%;
+  }
+  
+  &:active:before {
+    background-size: 0%;
+    transition: background 0s;
+  }
+  
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(229, 9, 20, 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(229, 9, 20, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(229, 9, 20, 0);
+    }
+  }
+  
+  animation: pulse 2s infinite;
 `;
 
 export default function Home() {
@@ -120,6 +208,19 @@ export default function Home() {
     },
   };
 
+  const pulseVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        duration: 0.6,
+        delay: 0.8,
+        ease: "easeOut"
+      }
+    }
+  };
+
   return (
     <main>
       <HeroSection>
@@ -136,13 +237,35 @@ export default function Home() {
             Your ultimate entertainment platform with all your favorite movies and shows
           </HeroSubtitle>
           <ButtonGroup variants={itemVariants}>
-            <Link href="/students" passHref>
-              <PrimaryButton as="a">Browse Students</PrimaryButton>
+            <Link href="/students" passHref legacyBehavior>
+              <PrimaryButton>
+                <FaFilm />
+                Browse Students
+                <FaArrowRight />
+              </PrimaryButton>
             </Link>
-            <Link href="/about" passHref>
-              <SecondaryButton as="a">Learn More</SecondaryButton>
+            <Link href="/about" passHref legacyBehavior>
+              <SecondaryButton>
+                <FaBookOpen />
+                Learn More
+                <FaArrowRight />
+              </SecondaryButton>
             </Link>
           </ButtonGroup>
+          
+          <ResourcesButton variants={pulseVariants}>
+            <Link href="/resources" passHref legacyBehavior>
+              <PulsingButton>
+                <VerticalDots>
+                  <Dot />
+                  <Dot />
+                  <Dot />
+                </VerticalDots>
+                Access Resources
+                <FaArrowRight />
+              </PulsingButton>
+            </Link>
+          </ResourcesButton>
         </HeroContent>
       </HeroSection>
       
