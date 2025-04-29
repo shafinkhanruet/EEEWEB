@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaUser, FaCrown, FaCode } from 'react-icons/fa';
+import { touchFriendly } from '../styles/responsive';
 
 const CardContainer = styled(motion.div)`
   position: relative;
@@ -26,6 +27,13 @@ const CardContainer = styled(motion.div)`
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: center;
   isolation: isolate;
+  
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    width: 100%;
+    height: 380px;
+    max-width: 280px;
+    margin: 0 auto;
+  }
 
   &:before {
     content: '';
@@ -388,6 +396,44 @@ const DefaultAvatar = styled(motion.div)`
     svg {
       transform: scale(1.1);
     }
+  }
+`;
+
+const CardActions = styled.div`
+  position: absolute;
+  bottom: 1rem;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  z-index: 3;
+  
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    gap: 0.75rem;
+  }
+`;
+
+const ActionButton = styled(motion.button)`
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  ${touchFriendly}
+  
+  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
+    width: 40px;
+    height: 40px;
   }
 `;
 
