@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaBars, FaTimes } from 'react-icons/fa';
+import { useNavbar } from '../contexts/NavbarContext';
 
 const Nav = styled(motion.nav)`
   position: fixed;
@@ -150,6 +151,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const { showNavbar } = useNavbar();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -165,6 +167,9 @@ const Navbar = () => {
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
+
+  // Don't render navbar if showNavbar is false
+  if (!showNavbar) return null;
 
   const navItems = [
     { name: 'Home', path: '/' },

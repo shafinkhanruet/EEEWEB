@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, { useEffect, useState, useRef, useMemo, useContext } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -7,6 +7,7 @@ import { FaArrowLeft, FaPhone, FaFacebook, FaStar, FaGraduationCap,
   FaUserSlash, FaAddressCard, FaUniversity, FaMapMarkerAlt, FaCalendarAlt, 
   FaUserGraduate, FaChartLine, FaAward, FaFacebookF, FaInstagram, FaLinkedinIn } from 'react-icons/fa';
 import { allStudents } from '../data/students';
+import { NavbarContext } from '../contexts/NavbarContext';
 
 // Overlay for premium effect
 const PageOverlay = styled(motion.div)`
@@ -945,20 +946,117 @@ const FormButton = styled(motion.button)`
 const StudentProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [student, setStudent] = useState(null);
+  const containerRef = useRef(null);
+  const { setShowNavbar } = useContext(NavbarContext);
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [student, setStudent] = useState(null);
   const [isMounted, setIsMounted] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-  const containerRef = useRef(null);
-  
-  // Add new state for contact editing
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [contactForm, setContactForm] = useState({
     phone: '',
     fbLink: ''
   });
-  const [saveStatus, setSaveStatus] = useState({ message: '', error: false });
+  const [isContactUpdated, setIsContactUpdated] = useState(false);
+  
+  // Hide the navbar when component mounts
+  useEffect(() => {
+    setShowNavbar(false);
+    
+    // Restore navbar when component unmounts
+    return () => {
+      setShowNavbar(true);
+    };
+  }, [setShowNavbar]);
+  
+  // Animation variants
+  const containerVariants = {
+    hidden: {
+      opacity: 0
+    },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        when: "beforeChildren",
+        delay: 0.1
+      }
+    },
+    exit: {
+      opacity: 0,
+      transition: {
+        duration: 0.3
+      }
+    }
+  };
+  
+  const pageTransitionVariants = {
+    initial: {
+      opacity: 0,
+      scale: 0.9,
+      y: 50
+    },
+    animate: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        damping: 20,
+        stiffness: 100,
+        duration: 0.7
+      }
+    },
+    exit: {
+      opacity: 0,
+      scale: 0.95,
+      y: -20,
+      transition: {
+        duration: 0.4
+      }
+    }
+  };
+  
+  const overlayVariants = {
+    hidden: {
+      opacity: 0
+    },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.5
+      }
+    }
+  };
+  
+  const cardHoverVariants = {
+    initial: {
+      y: 0
+    },
+    hover: {
+      y: -10,
+      transition: {
+        duration: 0.4,
+        ease: [0.25, 0.1, 0.25, 1.0]
+      }
+    }
+  };
+  
+  const itemVariants = {
+    hidden: {
+      opacity: 0,
+      y: 20
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: [0.25, 0.1, 0.25, 1.0]
+      }
+    }
+  };
   
   // Audio setup for interactions
   const [hoverSound] = useState(new Audio('/sounds/hover.mp3'));
@@ -1082,7 +1180,7 @@ const StudentProfile = () => {
   const handleSaveContact = async () => {
     try {
       playClickSound();
-      setSaveStatus({ message: 'Saving...', error: false });
+      setIsContactUpdated(true);
       
       // Send update to the API
       const response = await fetch('/api/updateContacts', {
@@ -1110,17 +1208,17 @@ const StudentProfile = () => {
       });
       
       // Success message
-      setSaveStatus({ message: 'Contact information updated successfully!', error: false });
+      setIsContactUpdated(true);
       
       // Close edit modal after a delay
       setTimeout(() => {
-        setIsEditing(false);
-        setSaveStatus({ message: '', error: false });
+        setIsEditModalOpen(false);
+        setIsContactUpdated(false);
       }, 1500);
       
     } catch (error) {
       console.error('Error saving contact:', error);
-      setSaveStatus({ message: `Failed to save: ${error.message}`, error: true });
+      setIsContactUpdated(false);
     }
   };
   
@@ -1202,423 +1300,432 @@ const StudentProfile = () => {
   }
 
   return (
-    <ProfileContainer
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-      ref={containerRef}
+    <motion.div
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      variants={pageTransitionVariants}
     >
-      <PageOverlay 
+      <ProfileContainer
+        className="student-profile-container"
         initial="hidden"
         animate="visible"
-        variants={overlayVariants}
-      />
-      
-      <BackButton 
-        onClick={() => {
-          playClickSound();
-          navigate('/students');
-        }}
-        onMouseEnter={playHoverSound}
-        variants={itemVariants}
-        whileHover={{ scale: 1.25, rotate: -10, backgroundColor: "rgba(229, 9, 20, 0.9)" }}
-        whileTap={{ scale: 0.85, rotate: 0 }}
-        animate={{ 
-          scale: [1, 1.05, 1],
-          transition: { duration: 2, repeat: Infinity, repeatType: "reverse" }
-        }}
+        variants={containerVariants}
+        ref={containerRef}
       >
-        <FaArrowLeft />
-      </BackButton>
-      
-      <ProfileCard 
-        initial="initial"
-        whileHover="hover"
-        variants={cardHoverVariants}
-        animate={{ 
-          boxShadow: ["0 20px 50px rgba(0, 0, 0, 0.8)", "0 25px 60px rgba(229, 9, 20, 0.2), 0 25px 60px rgba(0, 0, 0, 0.8)", "0 20px 50px rgba(0, 0, 0, 0.8)"],
-          transition: { duration: 5, repeat: Infinity, repeatType: "reverse" }
-        }}
-      >
-        <AvatarOuterContainer 
-          variants={itemVariants}
-          initial={{ scale: 0.8, opacity: 0, y: 20 }}
-          animate={{ 
-            scale: 1, 
-            opacity: 1,
-            y: 0,
-            transition: {
-              type: "spring",
-              stiffness: 400,
-              damping: 15,
-              delay: 0.4
-            }
+        <PageOverlay 
+          initial="hidden"
+          animate="visible"
+          variants={overlayVariants}
+        />
+        
+        <BackButton 
+          className="back-button"
+          onClick={() => {
+            playClickSound();
+            navigate('/students');
           }}
-          {...floatAnimation}
+          onMouseEnter={playHoverSound}
+          variants={itemVariants}
+          whileHover={{ scale: 1.25, rotate: -10, backgroundColor: "rgba(229, 9, 20, 0.9)" }}
+          whileTap={{ scale: 0.85, rotate: 0 }}
+          animate={{ 
+            scale: [1, 1.05, 1],
+            transition: { duration: 2, repeat: Infinity, repeatType: "reverse" }
+          }}
         >
-          <AvatarGlow 
-            animate={{ 
-              opacity: [0.5, 0.9, 0.5], 
-              scale: [1, 1.15, 1],
-              filter: ["blur(10px)", "blur(15px)", "blur(10px)"]
-            }}
-            transition={{ 
-              duration: 4, 
-              repeat: Infinity,
-              repeatType: "mirror",
-              ease: "easeInOut"
-            }}
-          />
-          <AvatarContainer
-            whileHover={{ scale: 1.12, boxShadow: "0 0 40px rgba(229, 9, 20, 0.8)" }}
-            whileTap={{ scale: 0.95 }}
-            animate={{ 
-              boxShadow: ["0 0 25px rgba(229, 9, 20, 0.4)", "0 0 35px rgba(229, 9, 20, 0.7)", "0 0 25px rgba(229, 9, 20, 0.4)"],
-              transition: { duration: 3, repeat: Infinity, repeatType: "mirror" }
-            }}
-          >
-            {student && student.image ? (
-              <img 
-                src={student.image} 
-                alt={student.name}
-                style={{ 
-                  width: '100%', 
-                  height: '100%', 
-                  objectFit: 'cover',
-                  borderRadius: '50%'
-                }} 
-              />
-            ) : (
-              <div style={{ 
-                width: '100%', 
-                height: '100%', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                fontSize: '4rem',
-                fontWeight: 'bold',
-                color: '#E5E5E5',
-                backgroundColor: '#181818',
-                borderRadius: '50%'
-              }}>
-                {student && student.name ? student.name.charAt(0) : 'S'}
-              </div>
-            )}
-          </AvatarContainer>
-          <StatusBadge
-            initial={{ scale: 0, opacity: 0, rotateZ: -10 }}
+          <FaArrowLeft />
+        </BackButton>
+        
+        <ProfileCard 
+          initial="initial"
+          whileHover="hover"
+          variants={cardHoverVariants}
+          animate={{ 
+            boxShadow: ["0 20px 50px rgba(0, 0, 0, 0.8)", "0 25px 60px rgba(229, 9, 20, 0.2), 0 25px 60px rgba(0, 0, 0, 0.8)", "0 20px 50px rgba(0, 0, 0, 0.8)"],
+            transition: { duration: 5, repeat: Infinity, repeatType: "reverse" }
+          }}
+        >
+          <AvatarOuterContainer 
+            variants={itemVariants}
+            initial={{ scale: 0.8, opacity: 0, y: 20 }}
             animate={{ 
               scale: 1, 
               opacity: 1,
-              rotateZ: 0,
+              y: 0,
               transition: {
-                delay: 0.9,
                 type: "spring",
-                stiffness: 500,
+                stiffness: 400,
+                damping: 15,
+                delay: 0.4
+              }
+            }}
+            {...floatAnimation}
+          >
+            <AvatarGlow 
+              animate={{ 
+                opacity: [0.5, 0.9, 0.5], 
+                scale: [1, 1.15, 1],
+                filter: ["blur(10px)", "blur(15px)", "blur(10px)"]
+              }}
+              transition={{ 
+                duration: 4, 
+                repeat: Infinity,
+                repeatType: "mirror",
+                ease: "easeInOut"
+              }}
+            />
+            <AvatarContainer
+              whileHover={{ scale: 1.12, boxShadow: "0 0 40px rgba(229, 9, 20, 0.8)" }}
+              whileTap={{ scale: 0.95 }}
+              animate={{ 
+                boxShadow: ["0 0 25px rgba(229, 9, 20, 0.4)", "0 0 35px rgba(229, 9, 20, 0.7)", "0 0 25px rgba(229, 9, 20, 0.4)"],
+                transition: { duration: 3, repeat: Infinity, repeatType: "mirror" }
+              }}
+            >
+              {student && student.image ? (
+                <img 
+                  src={student.image} 
+                  alt={student.name}
+                  style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    objectFit: 'cover',
+                    borderRadius: '50%'
+                  }} 
+                />
+              ) : (
+                <div style={{ 
+                  width: '100%', 
+                  height: '100%', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  fontSize: '4rem',
+                  fontWeight: 'bold',
+                  color: '#E5E5E5',
+                  backgroundColor: '#181818',
+                  borderRadius: '50%'
+                }}>
+                  {student && student.name ? student.name.charAt(0) : 'S'}
+                </div>
+              )}
+            </AvatarContainer>
+            <StatusBadge
+              initial={{ scale: 0, opacity: 0, rotateZ: -10 }}
+              animate={{ 
+                scale: 1, 
+                opacity: 1,
+                rotateZ: 0,
+                transition: {
+                  delay: 0.9,
+                  type: "spring",
+                  stiffness: 500,
+                  damping: 15
+                }
+              }}
+              whileHover={{ 
+                scale: 1.2, 
+                rotateZ: 5,
+                boxShadow: "0 8px 20px rgba(229, 9, 20, 0.6)"
+              }}
+            >
+              EEE
+            </StatusBadge>
+          </AvatarOuterContainer>
+          
+          <StudentName 
+            variants={itemVariants}
+            initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
+            animate={{ 
+              opacity: 1, 
+              y: 0,
+              filter: "blur(0px)",
+              transition: {
+                delay: 0.6,
+                duration: 0.7,
+                ease: [0.25, 0.1, 0.25, 1.0]
+              }
+            }}
+            whileHover={{ scale: 1.05, letterSpacing: "1.5px", textShadow: "0 0 15px rgba(229, 9, 20, 0.5)" }}
+          >
+            {student.name}
+          </StudentName>
+          
+          <StudentId 
+            variants={itemVariants}
+            initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
+            animate={{ 
+              opacity: 1, 
+              y: 0,
+              filter: "blur(0px)",
+              transition: {
+                delay: 0.7,
+                duration: 0.7
+              }
+            }}
+            whileHover={{ letterSpacing: "2px" }}
+          >
+            ID: {student.id}
+          </StudentId>
+          
+          <QuoteContainer 
+            variants={itemVariants}
+            initial={{ opacity: 0, scale: 0.9, rotateX: 20, y: 30 }}
+            animate={{ 
+              opacity: 1, 
+              scale: 1, 
+              rotateX: 0,
+              y: 0,
+              transition: {
+                delay: 0.8,
+                duration: 0.7,
+                type: "spring",
+                stiffness: 100,
                 damping: 15
               }
             }}
             whileHover={{ 
-              scale: 1.2, 
-              rotateZ: 5,
-              boxShadow: "0 8px 20px rgba(229, 9, 20, 0.6)"
+              scale: 1.05, 
+              boxShadow: "0 20px 50px rgba(0, 0, 0, 0.7), 0 0 20px rgba(229, 9, 20, 0.4)",
+              rotateX: 8,
+              border: "1px solid rgba(229, 9, 20, 0.5)" 
             }}
           >
-            EEE
-          </StatusBadge>
-        </AvatarOuterContainer>
-        
-        <StudentName 
-          variants={itemVariants}
-          initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
-          animate={{ 
-            opacity: 1, 
-            y: 0,
-            filter: "blur(0px)",
-            transition: {
-              delay: 0.6,
-              duration: 0.7,
-              ease: [0.25, 0.1, 0.25, 1.0]
-            }
-          }}
-          whileHover={{ scale: 1.05, letterSpacing: "1.5px", textShadow: "0 0 15px rgba(229, 9, 20, 0.5)" }}
-        >
-          {student.name}
-        </StudentName>
-        
-        <StudentId 
-          variants={itemVariants}
-          initial={{ opacity: 0, y: 30, filter: "blur(8px)" }}
-          animate={{ 
-            opacity: 1, 
-            y: 0,
-            filter: "blur(0px)",
-            transition: {
-              delay: 0.7,
-              duration: 0.7
-            }
-          }}
-          whileHover={{ letterSpacing: "2px" }}
-        >
-          ID: {student.id}
-        </StudentId>
-        
-        <QuoteContainer 
-          variants={itemVariants}
-          initial={{ opacity: 0, scale: 0.9, rotateX: 20, y: 30 }}
-          animate={{ 
-            opacity: 1, 
-            scale: 1, 
-            rotateX: 0,
-            y: 0,
-            transition: {
-              delay: 0.8,
-              duration: 0.7,
-              type: "spring",
-              stiffness: 100,
-              damping: 15
-            }
-          }}
-          whileHover={{ 
-            scale: 1.05, 
-            boxShadow: "0 20px 50px rgba(0, 0, 0, 0.7), 0 0 20px rgba(229, 9, 20, 0.4)",
-            rotateX: 8,
-            border: "1px solid rgba(229, 9, 20, 0.5)" 
-          }}
-        >
-          <QuoteIcon
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ 
-              opacity: 1, 
-              scale: 1,
-              transition: { delay: 0.8, duration: 0.3 }
-            }}
-          >❝</QuoteIcon>
-          <span lang="bn" style={{ 
-            display: 'block', 
-            padding: '1rem 0.5rem', 
-            textAlign: 'center', 
-            width: '100%',
-            fontWeight: 600,
-            letterSpacing: '0.05em',
-            textShadow: '0 2px 3px rgba(0, 0, 0, 0.4)',
-            margin: '0.5rem auto',
-            lineHeight: 1.8,
-            background: 'linear-gradient(135deg, rgba(229, 9, 20, 0.05), transparent, rgba(229, 9, 20, 0.05))',
-            borderRadius: '8px'
-          }}>
-            {student.quote || "Electricity is the power that fuels our future"}
-          </span>
-          <QuoteIcon
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ 
-              opacity: 1, 
-              scale: 1,
-              transition: { delay: 0.9, duration: 0.3 }
-            }}
-          >❞</QuoteIcon>
-          <div style={{ 
-            marginTop: '0.5rem', 
-            fontSize: '0.8rem', 
-            opacity: 0.9,
-            fontStyle: 'italic',
-            letterSpacing: '0.5px'
-          }}>
-            — Student of RUET EEE Section A
-          </div>
-        </QuoteContainer>
-        
-        <ProfileSections>
-          <InfoSection 
-            variants={itemVariants}
-            initial={{ opacity: 0, x: -40, filter: "blur(8px)" }}
-            animate={{ 
-              opacity: 1, 
-              x: 0,
-              filter: "blur(0px)",
-              transition: {
-                delay: 0.9,
-                duration: 0.7,
-                type: "spring",
-                stiffness: 100,
-                damping: 15
-              }
-            }}
-            whileHover={{ y: -12, scale: 1.02, boxShadow: "0 25px 50px rgba(0, 0, 0, 0.6)" }}
-          >
-            <EditContactButton
-              onClick={() => {
-                playClickSound();
-                setIsEditing(true);
+            <QuoteIcon
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ 
+                opacity: 1, 
+                scale: 1,
+                transition: { delay: 0.8, duration: 0.3 }
               }}
-              onMouseEnter={playHoverSound}
-              whileHover={{ scale: 1.2 }}
-              whileTap={{ scale: 0.9 }}
+            >❝</QuoteIcon>
+            <span lang="bn" style={{ 
+              display: 'block', 
+              padding: '1rem 0.5rem', 
+              textAlign: 'center', 
+              width: '100%',
+              fontWeight: 600,
+              letterSpacing: '0.05em',
+              textShadow: '0 2px 3px rgba(0, 0, 0, 0.4)',
+              margin: '0.5rem auto',
+              lineHeight: 1.8,
+              background: 'linear-gradient(135deg, rgba(229, 9, 20, 0.05), transparent, rgba(229, 9, 20, 0.05))',
+              borderRadius: '8px'
+            }}>
+              {student.quote || "Electricity is the power that fuels our future"}
+            </span>
+            <QuoteIcon
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ 
+                opacity: 1, 
+                scale: 1,
+                transition: { delay: 0.9, duration: 0.3 }
+              }}
+            >❞</QuoteIcon>
+            <div style={{ 
+              marginTop: '0.5rem', 
+              fontSize: '0.8rem', 
+              opacity: 0.9,
+              fontStyle: 'italic',
+              letterSpacing: '0.5px'
+            }}>
+              — Student of RUET EEE Section A
+            </div>
+          </QuoteContainer>
+          
+          <ProfileSections>
+            <InfoSection 
+              variants={itemVariants}
+              initial={{ opacity: 0, x: -40, filter: "blur(8px)" }}
+              animate={{ 
+                opacity: 1, 
+                x: 0,
+                filter: "blur(0px)",
+                transition: {
+                  delay: 0.9,
+                  duration: 0.7,
+                  type: "spring",
+                  stiffness: 100,
+                  damping: 15
+                }
+              }}
+              whileHover={{ y: -12, scale: 1.02, boxShadow: "0 25px 50px rgba(0, 0, 0, 0.6)" }}
             >
-              <FaPlus />
-            </EditContactButton>
-            <SectionTitle>
-              <FaAddressCard /> Contact Information
-            </SectionTitle>
-            <InfoSectionContent>
-              <InfoItem>
-                <FaPhone /> {student ? student.phone : '+880 1234-567-890'}
-              </InfoItem>
-              <InfoItem>
-                <FaMapMarkerAlt /> University Campus, Building C
-              </InfoItem>
-              <SocialLinks
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ 
-                  opacity: 1, 
-                  y: 0,
-                  transition: {
-                    delay: 1.0,
-                    duration: 0.5
-                  }
+              <EditContactButton
+                onClick={() => {
+                  playClickSound();
+                  setIsEditModalOpen(true);
                 }}
+                onMouseEnter={playHoverSound}
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
               >
-                <SocialLink 
-                  href={student.facebook} 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={playClickSound}
-                  onMouseEnter={playHoverSound}
-                  whileHover={{ scale: 1.2, rotate: 5 }}
-                  whileTap={{ scale: 0.9 }}
-                  initial={{ opacity: 0, scale: 0 }}
+                <FaPlus />
+              </EditContactButton>
+              <SectionTitle>
+                <FaAddressCard /> Contact Information
+              </SectionTitle>
+              <InfoSectionContent>
+                <InfoItem>
+                  <FaPhone /> {student ? student.phone : '+880 1234-567-890'}
+                </InfoItem>
+                <InfoItem>
+                  <FaMapMarkerAlt /> University Campus, Building C
+                </InfoItem>
+                <SocialLinks
+                  initial={{ opacity: 0, y: 20 }}
                   animate={{ 
                     opacity: 1, 
-                    scale: 1,
+                    y: 0,
                     transition: {
-                      delay: 1.1,
-                      duration: 0.4,
-                      type: "spring",
-                      stiffness: 300
+                      delay: 1.0,
+                      duration: 0.5
                     }
                   }}
                 >
-                  <FaFacebookF />
-                </SocialLink>
-              </SocialLinks>
-            </InfoSectionContent>
-          </InfoSection>
-          
-          <DetailsCard
-            variants={itemVariants}
-            initial={{ opacity: 0, x: 40, filter: "blur(8px)" }}
-            animate={{ 
-              opacity: 1, 
-              x: 0,
-              filter: "blur(0px)",
-              transition: {
-                delay: 0.9,
-                duration: 0.7,
-                type: "spring",
-                stiffness: 100,
-                damping: 15
-              }
-            }}
-            whileHover={{ y: -12, scale: 1.02, boxShadow: "0 25px 50px rgba(0, 0, 0, 0.6)" }}
-          >
-            <SectionTitle>
-              <FaUserGraduate /> Academic Profile
-            </SectionTitle>
-            <InfoSectionContent>
-              <InfoItem>
-                <FaUniversity /> Department: {student ? student.department : 'Electrical & Electronic Engineering'}
-              </InfoItem>
-              <InfoItem>
-                <FaCalendarAlt /> Series: {student ? student.series : '23'}
-              </InfoItem>
-              <InfoItem>
-                <FaAward /> Section: {student ? student.section : 'A'}
-              </InfoItem>
-              <InfoItem>
-                <FaChartLine /> Status: Active
-              </InfoItem>
-            </InfoSectionContent>
-          </DetailsCard>
-        </ProfileSections>
-      </ProfileCard>
-      
-      {/* Contact Edit Modal */}
-      <AnimatePresence>
-        {isEditing && (
-          <EditModal
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setIsEditing(false)}
-          >
-            <EditForm
-              initial={{ scale: 0.9, y: 20, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.9, y: 20, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
+                  <SocialLink 
+                    href={student.facebook} 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={playClickSound}
+                    onMouseEnter={playHoverSound}
+                    whileHover={{ scale: 1.2, rotate: 5 }}
+                    whileTap={{ scale: 0.9 }}
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ 
+                      opacity: 1, 
+                      scale: 1,
+                      transition: {
+                        delay: 1.1,
+                        duration: 0.4,
+                        type: "spring",
+                        stiffness: 300
+                      }
+                    }}
+                  >
+                    <FaFacebookF />
+                  </SocialLink>
+                </SocialLinks>
+              </InfoSectionContent>
+            </InfoSection>
+            
+            <DetailsCard
+              variants={itemVariants}
+              initial={{ opacity: 0, x: 40, filter: "blur(8px)" }}
+              animate={{ 
+                opacity: 1, 
+                x: 0,
+                filter: "blur(0px)",
+                transition: {
+                  delay: 0.9,
+                  duration: 0.7,
+                  type: "spring",
+                  stiffness: 100,
+                  damping: 15
+                }
+              }}
+              whileHover={{ y: -12, scale: 1.02, boxShadow: "0 25px 50px rgba(0, 0, 0, 0.6)" }}
             >
-              <h2><FaAddressCard /> Edit Contact Information</h2>
-              
-              {saveStatus.message && (
-                <div style={{ 
-                  padding: '0.8rem', 
-                  borderRadius: '4px',
-                  background: saveStatus.error ? 'rgba(220, 53, 69, 0.2)' : 'rgba(40, 167, 69, 0.2)',
-                  color: saveStatus.error ? '#dc3545' : '#28a745',
-                  marginBottom: '1rem'
-                }}>
-                  {saveStatus.message}
-                </div>
-              )}
-              
-              <FormField>
-                <label htmlFor="phone">Phone Number</label>
-                <input 
-                  type="text"
-                  id="phone"
-                  name="phone"
-                  value={contactForm.phone}
-                  onChange={handleFormChange}
-                  placeholder="Enter phone number"
-                />
-              </FormField>
-              
-              <FormField>
-                <label htmlFor="fbLink">Facebook Profile Link</label>
-                <input 
-                  type="text"
-                  id="fbLink"
-                  name="fbLink"
-                  value={contactForm.fbLink}
-                  onChange={handleFormChange}
-                  placeholder="Enter Facebook profile URL"
-                />
-              </FormField>
-              
-              <FormActions>
-                <FormButton 
-                  onClick={() => setIsEditing(false)}
-                  onMouseEnter={playHoverSound}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Cancel
-                </FormButton>
-                <FormButton 
-                  primary
-                  onClick={handleSaveContact}
-                  onMouseEnter={playHoverSound}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Save Changes
-                </FormButton>
-              </FormActions>
-            </EditForm>
-          </EditModal>
-        )}
-      </AnimatePresence>
-    </ProfileContainer>
+              <SectionTitle>
+                <FaUserGraduate /> Academic Profile
+              </SectionTitle>
+              <InfoSectionContent>
+                <InfoItem>
+                  <FaUniversity /> Department: {student ? student.department : 'Electrical & Electronic Engineering'}
+                </InfoItem>
+                <InfoItem>
+                  <FaCalendarAlt /> Series: {student ? student.series : '23'}
+                </InfoItem>
+                <InfoItem>
+                  <FaAward /> Section: {student ? student.section : 'A'}
+                </InfoItem>
+                <InfoItem>
+                  <FaChartLine /> Status: Active
+                </InfoItem>
+              </InfoSectionContent>
+            </DetailsCard>
+          </ProfileSections>
+        </ProfileCard>
+        
+        {/* Contact Edit Modal */}
+        <AnimatePresence>
+          {isEditModalOpen && (
+            <EditModal
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsEditModalOpen(false)}
+            >
+              <EditForm
+                initial={{ scale: 0.9, y: 20, opacity: 0 }}
+                animate={{ scale: 1, y: 0, opacity: 1 }}
+                exit={{ scale: 0.9, y: 20, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h2><FaAddressCard /> Edit Contact Information</h2>
+                
+                {isContactUpdated && (
+                  <div style={{ 
+                    padding: '0.8rem', 
+                    borderRadius: '4px',
+                    background: 'rgba(40, 167, 69, 0.2)',
+                    color: '#28a745',
+                    marginBottom: '1rem'
+                  }}>
+                    Contact information updated successfully!
+                  </div>
+                )}
+                
+                <FormField>
+                  <label htmlFor="phone">Phone Number</label>
+                  <input 
+                    type="text"
+                    id="phone"
+                    name="phone"
+                    value={contactForm.phone}
+                    onChange={handleFormChange}
+                    placeholder="Enter phone number"
+                  />
+                </FormField>
+                
+                <FormField>
+                  <label htmlFor="fbLink">Facebook Profile Link</label>
+                  <input 
+                    type="text"
+                    id="fbLink"
+                    name="fbLink"
+                    value={contactForm.fbLink}
+                    onChange={handleFormChange}
+                    placeholder="Enter Facebook profile URL"
+                  />
+                </FormField>
+                
+                <FormActions>
+                  <FormButton 
+                    onClick={() => setIsEditModalOpen(false)}
+                    onMouseEnter={playHoverSound}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Cancel
+                  </FormButton>
+                  <FormButton 
+                    primary
+                    onClick={handleSaveContact}
+                    onMouseEnter={playHoverSound}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Save Changes
+                  </FormButton>
+                </FormActions>
+              </EditForm>
+            </EditModal>
+          )}
+        </AnimatePresence>
+      </ProfileContainer>
+    </motion.div>
   );
 };
 

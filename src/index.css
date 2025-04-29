@@ -258,3 +258,23 @@ img {
   opacity: 1;
   visibility: visible;
 }
+
+/* Student profile styling when navbar is hidden */
+body .student-profile-container {
+  padding-top: 0;
+  margin-top: 0;
+}
+
+/* Make back button more prominent */
+.student-profile-container .back-button {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+}
+
+/* Ensure content starts at the top */
+.hide-navbar .student-profile-container {
+  margin-top: 0;
+  padding-top: 0;
+}

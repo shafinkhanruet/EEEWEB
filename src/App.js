@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useState, useEffect } from 'react';
+import React, { lazy, Suspense, useState, useEffect, useContext } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import styled, { ThemeProvider, createGlobalStyle } from 'styled-components';
@@ -8,11 +8,13 @@ import { darkTheme } from './theme';
 
 // Context
 import { SoundContext } from './contexts/SoundContext';
+import NavbarProvider, { NavbarContext } from './contexts/NavbarContext';
 
 // Components - Import synchronously for faster initial load
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import LoadingSpinner from './components/LoadingSpinner';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Lazy loaded components
 const SplashScreen = lazy(() => import('./components/SplashScreen'));
@@ -72,7 +74,17 @@ const BackgroundContainer = React.memo(() => (
   </Suspense>
 ));
 
-function App() {
+// Add splash screen wrapper
+const SplashScreenWrapper = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+`;
+
+const App = () => {
   const location = useLocation();
   const [showSplash, setShowSplash] = useState(false); 
   const [contentReady, setContentReady] = useState(false);
@@ -80,6 +92,9 @@ function App() {
   
   // Control when to show the navbar and other elements
   const [showUI, setShowUI] = useState(false);
+  
+  // Sound context state
+  const [soundEnabled, setSoundEnabled] = useState(false);
   
   useEffect(() => {
     // Immediately start loading the main content
@@ -135,13 +150,6 @@ function App() {
     setShowUI(true);
   };
 
-  // Create a simple sound context value with disabled functionality
-  const soundContextValue = {
-    soundEnabled: false,
-    setSoundEnabled: () => {},
-    playSound: () => {}
-  };
-
   // Animation variants for main content
   const contentVariants = {
     hidden: { opacity: 0 },
@@ -157,103 +165,78 @@ function App() {
 
   return (
     <ThemeProvider theme={darkTheme}>
-      <TransitionStyle />
-      <SoundContext.Provider value={soundContextValue}>
-        <AppContainer>
-          {showSplash && (
-            <Suspense fallback={<LoadingSpinner />}>
-              <ErrorBoundary onError={handleSplashError}>
-                <SplashScreen onComplete={handleSplashComplete} />
-              </ErrorBoundary>
-            </Suspense>
-          )}
-          
-          <Suspense fallback={null}>
-            <BackgroundContainer />
-          </Suspense>
-          
-          <AnimatePresence>
-            {showUI && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Navbar />
-              </motion.div>
-            )}
-          </AnimatePresence>
-          
-          <MainContent
-            initial="hidden"
-            animate={contentReady && showUI ? "visible" : "hidden"}
-            exit="exit"
-            variants={contentVariants}
-          >
-            <AnimatePresence mode="wait">
-              {contentReady && (
-                <Suspense fallback={<LoadingSpinner />}>
-                  <PageTransition
-                    key={location.pathname}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <Routes location={location}>
-                      <Route path="/" element={<Home />} />
-                      <Route path="/students" element={<Students />} />
-                      <Route path="/student/:id" element={<StudentProfile />} />
-                      <Route path="/about" element={<About />} />
-                      <Route path="/contact" element={<Contact />} />
-                      <Route path="/resources" element={<Resources />} />
-                      <Route path="/admin/contacts" element={<StudentContactManager />} />
-                    </Routes>
-                  </PageTransition>
-                </Suspense>
+      <SoundContext.Provider value={{ soundEnabled, setSoundEnabled }}>
+        <NavbarProvider>
+          <AppContainer>
+            {/* Global styles */}
+            <TransitionStyle />
+            
+            {/* Splash screen */}
+            <AnimatePresence>
+              {showSplash && (
+                <SplashScreenWrapper key="splash">
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ErrorBoundary onError={handleSplashError}>
+                      <SplashScreen onComplete={handleSplashComplete} />
+                    </ErrorBoundary>
+                  </Suspense>
+                </SplashScreenWrapper>
               )}
             </AnimatePresence>
-          </MainContent>
-          
-          <AnimatePresence>
-            {showUI && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Footer />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </AppContainer>
+            
+            <AnimatePresence>
+              {showUI && (
+                <Navbar />
+              )}
+            </AnimatePresence>
+            
+            <MainContent
+              initial="hidden"
+              animate={contentReady && showUI ? "visible" : "hidden"}
+              exit="exit"
+              variants={contentVariants}
+            >
+              <AnimatePresence mode="wait">
+                {contentReady && (
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <PageTransition
+                      key={location.pathname}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <Routes location={location}>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/students" element={<Students />} />
+                        <Route path="/student/:id" element={<StudentProfile />} />
+                        <Route path="/about" element={<About />} />
+                        <Route path="/contact" element={<Contact />} />
+                        <Route path="/resources" element={<Resources />} />
+                        <Route path="/admin/contacts" element={<StudentContactManager />} />
+                      </Routes>
+                    </PageTransition>
+                  </Suspense>
+                )}
+              </AnimatePresence>
+            </MainContent>
+            
+            <AnimatePresence>
+              {showUI && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Footer />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </AppContainer>
+        </NavbarProvider>
       </SoundContext.Provider>
     </ThemeProvider>
   );
-}
-
-// Simple error boundary for handling splash screen errors
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-  
-  static getDerivedStateFromError(error) {
-    return { hasError: true };
-  }
-  
-  componentDidCatch(error, errorInfo) {
-    console.error("ErrorBoundary caught an error:", error, errorInfo);
-    this.props.onError && this.props.onError();
-  }
-  
-  render() {
-    if (this.state.hasError) {
-      return null; // Render nothing if there's an error
-    }
-    return this.props.children;
-  }
-}
+};
 
 export default App;

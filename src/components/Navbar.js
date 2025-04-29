@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaBars, FaTimes, FaGraduationCap } from 'react-icons/fa';
 import { SoundContext } from '../contexts/SoundContext';
+import { NavbarContext } from '../contexts/NavbarContext';
 
 // Import the logo directly
 import eeeflixLogo from '../assets/images/logos/eeeflix-logo.png';
@@ -348,7 +349,8 @@ const Navbar = ({ scrolled: propScrolled }) => {
   const [scrolled, setScrolled] = useState(propScrolled || false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
-  const { playSound } = useContext(SoundContext);
+  const { soundEnabled, setSoundEnabled } = useContext(SoundContext);
+  const { showNavbar } = useContext(NavbarContext);
   const [logoLoaded, setLogoLoaded] = useState(true);
 
   useEffect(() => {
@@ -368,12 +370,10 @@ const Navbar = ({ scrolled: propScrolled }) => {
   }, []);
 
   const handleLinkClick = () => {
-    playSound('click');
     setMobileMenuOpen(false);
   };
 
   const handleMenuToggle = () => {
-    playSound('click');
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
@@ -443,18 +443,21 @@ const Navbar = ({ scrolled: propScrolled }) => {
     }
   };
 
+  // Don't render if showNavbar is false
+  if (!showNavbar) return null;
+  
   return (
-    <NavContainer 
-      initial="hidden"
-      animate="visible"
-      variants={navVariants}
+    <NavContainer
       scrolled={scrolled}
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
     >
       <NavContent scrolled={scrolled}>
         <Logo 
           to="/" 
-          onClick={() => playSound('click')}
-          onMouseEnter={() => playSound('hover')}
+          onClick={() => setSoundEnabled(true)}
+          onMouseEnter={() => setSoundEnabled(true)}
         >
           {!logoLoaded ? (
             <LogoText>
@@ -475,7 +478,7 @@ const Navbar = ({ scrolled: propScrolled }) => {
               to="/" 
               active={location.pathname === '/'}
               onClick={handleLinkClick}
-              onMouseEnter={() => playSound('hover')}
+              onMouseEnter={() => setSoundEnabled(true)}
             >
               Home
             </NavLink>
@@ -486,7 +489,7 @@ const Navbar = ({ scrolled: propScrolled }) => {
               to="/students" 
               active={location.pathname === '/students'}
               onClick={handleLinkClick}
-              onMouseEnter={() => playSound('hover')}
+              onMouseEnter={() => setSoundEnabled(true)}
             >
               Students
             </NavLink>
@@ -497,7 +500,7 @@ const Navbar = ({ scrolled: propScrolled }) => {
               to="/about" 
               active={location.pathname === '/about'}
               onClick={handleLinkClick}
-              onMouseEnter={() => playSound('hover')}
+              onMouseEnter={() => setSoundEnabled(true)}
             >
               About
             </NavLink>
@@ -508,7 +511,7 @@ const Navbar = ({ scrolled: propScrolled }) => {
               to="/contact" 
               active={location.pathname === '/contact'}
               onClick={handleLinkClick}
-              onMouseEnter={() => playSound('hover')}
+              onMouseEnter={() => setSoundEnabled(true)}
             >
               Contact
             </NavLink>
@@ -519,7 +522,7 @@ const Navbar = ({ scrolled: propScrolled }) => {
               to="/resources" 
               active={location.pathname === '/resources'}
               onClick={handleLinkClick}
-              onMouseEnter={() => playSound('hover')}
+              onMouseEnter={() => setSoundEnabled(true)}
             >
               Resources
             </NavLink>

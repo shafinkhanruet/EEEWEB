@@ -1,0 +1,17 @@
+/* Hide navbar when viewing student profile */
+body.hide-navbar nav {
+  display: none !important;
+}
+
+/* Show back button more prominently when navbar is hidden */
+body.hide-navbar a[href="/students"] {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 100;
+}
+
+/* Adjust main content padding when navbar is hidden */
+body.hide-navbar {
+  padding-top: 0 !important;
+} 
