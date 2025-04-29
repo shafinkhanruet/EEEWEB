@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaBars, FaTimes, FaGraduationCap } from 'react-icons/fa';
 import { SoundContext } from '../contexts/SoundContext';
 import { NavbarContext } from '../contexts/NavbarContext';
-import { safeArea, touchFriendly } from '../styles/responsive';
 
 // Import the logo directly
 import eeeflixLogo from '../assets/images/logos/eeeflix-logo.png';
@@ -30,7 +29,6 @@ const NavContainer = styled(motion.nav)`
     ? '1px solid rgba(255, 255, 255, 0.08)' 
     : 'none'
   };
-  ${safeArea}
   
   &:before {
     content: '';
@@ -55,11 +53,7 @@ const NavContent = styled.div`
   transition: all 0.3s ease;
   
   @media (max-width: ${props => props.theme.breakpoints.tablet}) {
-    padding: ${props => props.scrolled ? '0.7rem 1.5rem' : '1rem 1.5rem'};
-  }
-  
-  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    padding: ${props => props.scrolled ? '0.7rem 1rem' : '1rem 1rem'};
+    padding: ${props => props.scrolled ? '0.7rem 2rem' : '1rem 2rem'};
   }
 `;
 
@@ -70,10 +64,6 @@ const Logo = styled(Link)`
   text-decoration: none;
   z-index: 2;
   position: relative;
-  
-  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    margin-right: 0;
-  }
   
   &:after {
     content: '';
@@ -98,10 +88,6 @@ const LogoImage = styled.img`
   filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5));
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   
-  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    height: 40px;
-  }
-  
   &:hover {
     transform: scale(1.08);
     filter: drop-shadow(0 4px 12px rgba(229, 9, 20, 0.5));
@@ -116,10 +102,6 @@ const LogoText = styled.div`
   display: flex;
   align-items: center;
   text-shadow: 0 2px 10px rgba(229, 9, 20, 0.5);
-  
-  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    font-size: 1.8rem;
-  }
   
   span {
     color: #FFFFFF;
@@ -223,13 +205,6 @@ const MobileMenuButton = styled(motion.button)`
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   overflow: hidden;
-  ${touchFriendly}
-  
-  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    width: 40px;
-    height: 40px;
-    font-size: 1.2rem;
-  }
   
   &:before {
     content: '';
@@ -271,7 +246,6 @@ const MobileMenu = styled(motion.div)`
   justify-content: center;
   align-items: center;
   z-index: 100;
-  ${safeArea}
   
   &:before {
     content: '';
@@ -302,15 +276,10 @@ const MobileMenu = styled(motion.div)`
 const MobileNavLinks = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2rem;
   text-align: center;
   position: relative; 
   z-index: 1;
-  width: 90%;
-  
-  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    gap: 1.2rem;
-  }
 `;
 
 const MobileNavLink = styled(NavLink)`
@@ -323,12 +292,6 @@ const MobileNavLink = styled(NavLink)`
     : '0 8px 20px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.05)'
   };
   backdrop-filter: blur(15px);
-  ${touchFriendly}
-  
-  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    font-size: 1.2rem;
-    padding: 0.8rem 1.5rem;
-  }
   
   &:hover {
     transform: translateY(-5px) scale(1.03);
@@ -356,7 +319,6 @@ const NavButton = styled(motion.button)`
   position: relative;
   overflow: hidden;
   margin-left: 1rem;
-  ${touchFriendly}
   
   &:before {
     content: '';

@@ -20,7 +20,6 @@ import {
   FaEnvelopeOpenText
 } from 'react-icons/fa';
 import { SoundContext } from '../contexts/SoundContext';
-import { safeArea, touchFriendly } from '../styles/responsive';
 
 const FooterContainer = styled.footer`
   background: #0A0A0A;
@@ -30,11 +29,6 @@ const FooterContainer = styled.footer`
   z-index: 10;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 -5px 35px rgba(0, 0, 0, 0.25);
-  ${safeArea}
-  
-  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    padding: 3rem 0 1.5rem;
-  }
 `;
 
 const FooterContent = styled.div`
@@ -55,11 +49,6 @@ const FooterContent = styled.div`
 const FooterSection = styled.div`
   display: flex;
   flex-direction: column;
-  
-  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    align-items: center;
-    text-align: center;
-  }
 `;
 
 const FooterTitle = styled.h3`
@@ -78,11 +67,6 @@ const FooterTitle = styled.h3`
     width: 50px;
     height: 2px;
     background: linear-gradient(90deg, #E50914, #FF5F6D);
-    
-    @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-      left: 50%;
-      transform: translateX(-50%);
-    }
   }
 `;
 
@@ -95,7 +79,6 @@ const FooterLink = styled.a`
   display: flex;
   align-items: center;
   gap: 0.7rem;
-  ${touchFriendly}
   
   svg {
     color: #E50914;
@@ -110,14 +93,6 @@ const FooterLink = styled.a`
       transform: scale(1.2);
     }
   }
-  
-  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    justify-content: center;
-    
-    &:hover {
-      transform: translateY(-5px);
-    }
-  }
 `;
 
 const SocialIcons = styled.div`
@@ -125,10 +100,6 @@ const SocialIcons = styled.div`
   gap: 1.2rem;
   margin-top: 1.5rem;
   flex-wrap: wrap;
-  
-  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    justify-content: center;
-  }
 `;
 
 const SocialIcon = styled(motion.a)`
@@ -142,7 +113,6 @@ const SocialIcon = styled(motion.a)`
   display: flex;
   align-items: center;
   justify-content: center;
-  ${touchFriendly}
   
   &:hover {
     color: #FFFFFF;
@@ -163,7 +133,6 @@ const Copyright = styled.div`
   @media (max-width: ${props => props.theme.breakpoints.mobile}) {
     margin-top: 2.5rem;
     padding-top: 1.5rem;
-    font-size: 0.8rem;
   }
 `;
 
@@ -173,10 +142,6 @@ const Logo = styled.div`
   font-weight: 700;
   color: #FFFFFF;
   margin-bottom: 1.2rem;
-  
-  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    font-size: 1.8rem;
-  }
   
   span {
     color: #E50914;
@@ -189,12 +154,6 @@ const FooterText = styled.p`
   margin-bottom: 1.5rem;
   font-size: 0.95rem;
   opacity: 0.9;
-  
-  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    text-align: center;
-    font-size: 0.9rem;
-    max-width: 100%;
-  }
 `;
 
 const ContactInfo = styled.div`
@@ -208,11 +167,6 @@ const ContactItem = styled.div`
   align-items: flex-start;
   gap: 1rem;
   
-  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    justify-content: center;
-    text-align: center;
-  }
-  
   svg {
     color: #E50914;
     font-size: 1.1rem;
@@ -224,20 +178,11 @@ const ContactItem = styled.div`
     font-size: 0.95rem;
     line-height: 1.5;
     margin: 0;
-    
-    @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-      font-size: 0.9rem;
-    }
   }
 `;
 
 const ContactForm = styled.div`
   margin-top: 1.5rem;
-  
-  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    display: flex;
-    justify-content: center;
-  }
 `;
 
 const ContactButton = styled(motion.a)`
@@ -253,7 +198,6 @@ const ContactButton = styled(motion.a)`
   font-size: 0.95rem;
   margin-top: 1rem;
   box-shadow: 0 4px 15px rgba(229, 9, 20, 0.3);
-  ${touchFriendly}
   
   svg {
     font-size: 1rem;
@@ -261,11 +205,6 @@ const ContactButton = styled(motion.a)`
   
   &:hover {
     box-shadow: 0 6px 20px rgba(229, 9, 20, 0.4);
-  }
-  
-  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    padding: 0.6rem 1.2rem;
-    font-size: 0.9rem;
   }
 `;
 
@@ -275,11 +214,6 @@ const LegalLinks = styled.div`
   gap: 1.5rem;
   margin-top: 1rem;
   
-  @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-    justify-content: center;
-    gap: 1.2rem;
-  }
-  
   a {
     color: #8C8C8C;
     font-size: 0.85rem;
@@ -288,10 +222,6 @@ const LegalLinks = styled.div`
     
     &:hover {
       color: #FFFFFF;
-    }
-    
-    @media (max-width: ${props => props.theme.breakpoints.mobile}) {
-      font-size: 0.8rem;
     }
   }
 `;
