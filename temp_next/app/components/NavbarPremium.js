@@ -217,18 +217,25 @@ const MobileMenu = styled(motion.div)`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 2rem;
+  gap: 1.5rem;
   z-index: ${({ theme }) => theme.zIndex.modal};
-  padding: 2rem;
+  padding: 1.5rem;
   backdrop-filter: blur(10px);
   -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   overscroll-behavior: contain; /* Prevent scroll chain */
   
   /* Support for notched phones */
-  padding-top: max(2rem, env(safe-area-inset-top));
-  padding-bottom: max(2rem, env(safe-area-inset-bottom));
-  padding-left: max(2rem, env(safe-area-inset-left));
-  padding-right: max(2rem, env(safe-area-inset-right));
+  padding-top: max(1.5rem, env(safe-area-inset-top));
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  padding-left: max(1.5rem, env(safe-area-inset-left));
+  padding-right: max(1.5rem, env(safe-area-inset-right));
+  
+  @media (max-width: 480px) {
+    gap: 1rem;
+    padding: 1rem;
+    padding-top: max(1rem, env(safe-area-inset-top));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
 `;
 
 const MobileMenuItem = styled(motion.div)`
@@ -238,12 +245,18 @@ const MobileMenuItem = styled(motion.div)`
         ? theme.colors.accent
         : theme.colors.textPrimary
     };
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 600;
     transition: all 0.3s ease;
     letter-spacing: 1px;
     position: relative;
     padding: 0.5rem 1rem;
+    
+    @media (max-width: 480px) {
+      font-size: 1.2rem;
+      padding: 0.4rem 0.8rem;
+      letter-spacing: 0.5px;
+    }
     
     &::after {
       content: '';
@@ -286,9 +299,15 @@ const CloseButton = styled.button`
 
 const MobilePremiumButton = styled(PremiumButton)`
   display: flex;
-  margin-top: 2rem;
-  padding: 0.8rem 2rem;
-  font-size: 1rem;
+  margin-top: 1.5rem;
+  padding: 0.7rem 1.8rem;
+  font-size: 0.95rem;
+  
+  @media (max-width: 480px) {
+    margin-top: 1rem;
+    padding: 0.6rem 1.5rem;
+    font-size: 0.9rem;
+  }
 `;
 
 const NavbarPremium = () => {

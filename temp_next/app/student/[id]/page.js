@@ -233,13 +233,15 @@ const ProfileContainer = styled(motion.div)`
   
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    padding: 1.5rem;
-    gap: 1.5rem;
+    padding: 1.25rem;
+    gap: 1.25rem;
   }
   
   @media (max-width: 480px) {
-    padding: 1rem;
-    gap: 1rem;
+    padding: 0.75rem;
+    gap: 0.75rem;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(229, 9, 20, 0.12);
   }
 `;
 
@@ -270,11 +272,13 @@ const Name = styled(motion.h1)`
   -webkit-text-fill-color: transparent;
   
   @media (max-width: 768px) {
-    font-size: 2rem;
+    font-size: 1.8rem;
+    margin-bottom: 0.4rem;
   }
   
   @media (max-width: 480px) {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
+    margin-bottom: 0.3rem;
   }
 `;
 
