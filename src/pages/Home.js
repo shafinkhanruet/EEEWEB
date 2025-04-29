@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { motion, useAnimation, useScroll, useTransform } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { SoundContext } from '../contexts/SoundContext';
+import { FaUsers, FaEnvelope, FaFacebook, FaPhoneAlt } from 'react-icons/fa';
 
 // Components
 import Section from '../components/Section';
@@ -14,6 +15,14 @@ import ParallaxBackground from '../components/ParallaxBackground';
 
 // Mock data
 import { featuredStudents } from '../data/students';
+
+// Get the Class Representatives data (CRs)
+import { allStudents } from '../data/students';
+
+// Filter out the CRs
+const classRepresentatives = allStudents.filter(
+  student => student.role === 'CR'
+);
 
 // Styled Components
 const PageContainer = styled.div`
@@ -301,6 +310,153 @@ const ViewAllButtonWrapper = styled(motion.div)`
   }
 `;
 
+// Add these styled components for the Class Representatives section
+const CRSectionWrapper = styled.div`
+  position: relative;
+  padding: 6rem 0;
+  overflow: hidden;
+  
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #0F0F0F;
+    z-index: -1;
+  }
+  
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, 
+      rgba(229, 9, 20, 0) 0%, 
+      rgba(229, 9, 20, 0.6) 50%, 
+      rgba(229, 9, 20, 0) 100%
+    );
+  }
+`;
+
+const CRTitle = styled(EnhancedSectionTitle)`
+  &:after {
+    width: 120px;
+  }
+`;
+
+const CRGrid = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 4rem;
+  flex-wrap: wrap;
+  margin: 2rem auto;
+  max-width: 1200px;
+  padding: 0 2rem;
+  
+  @media (max-width: 768px) {
+    gap: 3rem;
+  }
+`;
+
+const CRCard = styled(motion.div)`
+  background: rgba(20, 20, 20, 0.6);
+  border-radius: 12px;
+  overflow: hidden;
+  width: 340px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(229, 9, 20, 0.2);
+  transition: all 0.4s ease;
+  
+  &:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(229, 9, 20, 0.2);
+    border-color: rgba(229, 9, 20, 0.5);
+  }
+`;
+
+const CRImageContainer = styled.div`
+  width: 100%;
+  position: relative;
+  height: 360px;
+  overflow: hidden;
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  
+  ${CRCard}:hover & img {
+    transform: scale(1.05);
+  }
+`;
+
+const CRBadge = styled.div`
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #E50914;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+`;
+
+const CRInfo = styled.div`
+  padding: 1.5rem;
+  text-align: center;
+`;
+
+const CRName = styled.h3`
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: white;
+`;
+
+const CRQuote = styled.p`
+  color: #B3B3B3;
+  font-style: italic;
+  margin: 1rem 0;
+  line-height: 1.6;
+  font-size: 0.95rem;
+`;
+
+const CRContactInfo = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.2rem;
+`;
+
+const CRContactButton = styled(motion.a)`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: #E50914;
+    transform: translateY(-3px);
+  }
+`;
+
 const Home = () => {
   const { playSound } = useContext(SoundContext);
   const [isIntroComplete, setIsIntroComplete] = useState(false);
@@ -325,6 +481,15 @@ const Home = () => {
     triggerOnce: true
   });
   
+  // Add ref for CR section
+  const [crRef, crInView] = useInView({
+    threshold: 0.1,
+    triggerOnce: true
+  });
+  
+  // Add animation control for CR section
+  const crControls = useAnimation();
+  
   // Handle intro video completion
   const handleIntroComplete = () => {
     setIsIntroComplete(true);
@@ -335,7 +500,7 @@ const Home = () => {
     setIsMounted(true);
   }, []);
   
-  // Trigger animations when sections come into view
+  // Update useEffect to include CR animations
   useEffect(() => {
     // Only start animations if component is mounted
     if (!isMounted) return;
@@ -346,7 +511,10 @@ const Home = () => {
     if (featuresInView) {
       featuresControls.start('visible');
     }
-  }, [studentsInView, featuresInView, studentControls, featuresControls, isMounted]);
+    if (crInView) {
+      crControls.start('visible');
+    }
+  }, [studentsInView, featuresInView, crInView, studentControls, featuresControls, crControls, isMounted]);
   
   // Improved variants for animations
   const containerVariants = {
@@ -430,6 +598,78 @@ const Home = () => {
           </motion.div>
           <Features />
         </EnhancedFeaturesWrapper>
+      </SectionWrapper>
+      
+      {/* Class Representatives Section */}
+      <SectionWrapper
+        ref={crRef}
+        initial="hidden"
+        animate={crControls}
+        variants={containerVariants}
+      >
+        <CRSectionWrapper>
+          <motion.div
+            variants={itemVariants}
+            style={{ textAlign: 'center', marginBottom: '3rem' }}
+          >
+            <CRTitle>Class Representatives</CRTitle>
+            <EnhancedSectionSubtitle>
+              Meet our dedicated Class Representatives who work tirelessly to support their fellow students and act as a bridge between students and faculty.
+            </EnhancedSectionSubtitle>
+          </motion.div>
+          
+          <CRGrid>
+            {classRepresentatives.map((cr) => (
+              <CRCard
+                key={cr.id}
+                variants={itemVariants}
+                whileHover={{ y: -5, transition: { duration: 0.2 } }}
+              >
+                <CRImageContainer>
+                  <img src={cr.image} alt={cr.name} />
+                  <CRBadge>
+                    <FaUsers /> Class Representative
+                  </CRBadge>
+                </CRImageContainer>
+                <CRInfo>
+                  <CRName>{cr.name}</CRName>
+                  <CRQuote>"{cr.quote}"</CRQuote>
+                  <CRContactInfo>
+                    <CRContactButton 
+                      href={`mailto:${cr.contactInfo.email}`}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onMouseEnter={handleButtonHover}
+                      onClick={handleButtonClick}
+                    >
+                      <FaEnvelope />
+                    </CRContactButton>
+                    <CRContactButton 
+                      href={cr.contactInfo.facebook}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onMouseEnter={handleButtonHover}
+                      onClick={handleButtonClick}
+                    >
+                      <FaFacebook />
+                    </CRContactButton>
+                    <CRContactButton 
+                      href={`tel:${cr.contactInfo.phone}`}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onMouseEnter={handleButtonHover}
+                      onClick={handleButtonClick}
+                    >
+                      <FaPhoneAlt />
+                    </CRContactButton>
+                  </CRContactInfo>
+                </CRInfo>
+              </CRCard>
+            ))}
+          </CRGrid>
+        </CRSectionWrapper>
       </SectionWrapper>
       
       {/* Featured Students Section */}
