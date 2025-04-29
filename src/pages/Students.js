@@ -2,7 +2,8 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { throttle } from '../utils/performance';
-import { FaChevronLeft, FaChevronRight, FaSearch } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight, FaSearch, FaUsers, FaCode, FaStar } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 // Components
 import Section from '../components/Section';
@@ -20,6 +21,8 @@ const PageContainer = styled.div`
 const PageHeader = styled.div`
   padding: 2.5rem 4rem;
   position: relative;
+  display: flex;
+  flex-direction: column;
   
   &:after {
     content: '';
@@ -39,6 +42,14 @@ const PageHeader = styled.div`
       right: 1.5rem;
     }
   }
+`;
+
+const PageTitleRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 0.5rem;
 `;
 
 const PageTitle = styled(motion.h1)`
@@ -248,11 +259,126 @@ const SliderButton = styled(motion.button)`
   }
 `;
 
+// Replace the Key People section with these styled components
+const KeyPeopleFloatingSection = styled(motion.div)`
+  display: flex;
+  gap: 0.5rem;
+  
+  @media (max-width: ${props => props.theme.breakpoints.tablet}) {
+    display: none;
+  }
+`;
+
+const KeyPeopleList = styled.div`
+  display: flex;
+  gap: 0.8rem;
+`;
+
+const KeyPersonItem = styled(motion.div)`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.5rem;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  
+  &:hover {
+    background-color: rgba(229, 9, 20, 0.1);
+  }
+  
+  &:after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    right: -50%;
+    bottom: -50%;
+    background: linear-gradient(
+      to bottom right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.05) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(45deg);
+    opacity: 0;
+  }
+`;
+
+const KeyPersonAvatar = styled(motion.div)`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid ${props => props.borderColor || '#E50914'};
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  position: relative;
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+`;
+
+const KeyPersonDetails = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const KeyPersonName = styled.h4`
+  color: #FFFFFF;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin: 0;
+`;
+
+const KeyPersonRole = styled.div`
+  font-size: 0.6rem;
+  color: ${props => props.color || '#E50914'};
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  
+  svg {
+    font-size: 0.6rem;
+  }
+`;
+
+const ExpandedInfo = styled(motion.div)`
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  padding: 0.5rem;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 0 0 8px 8px;
+  z-index: 5;
+`;
+
+const KeyPersonQuote = styled.p`
+  font-size: 0.75rem;
+  color: #B3B3B3;
+  font-style: italic;
+  margin: 0;
+  padding: 0.3rem 0.5rem;
+  border-left: 2px solid #E50914;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 0 4px 4px 0;
+  text-align: left;
+`;
+
 const Students = ({ soundContext }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
   
   // Add fallback for soundContext
   const playSound = useMemo(() => {
@@ -344,16 +470,131 @@ const Students = ({ soundContext }) => {
   const searchResultsRef = React.useRef(null);
   const recentRef = React.useRef(null);
 
+  // Filter out special role students (CRs and Developer)
+  const keyPeople = useMemo(() => {
+    return allStudents.filter(student => student.role === 'CR' || student.role === 'Developer');
+  }, []);
+  
+  // Replace tooltip state with expanded info state
+  const [expandedPerson, setExpandedPerson] = useState(null);
+  
+  // Toggle expanded person info
+  const togglePersonInfo = useCallback((personId) => {
+    setExpandedPerson(expandedPerson === personId ? null : personId);
+  }, [expandedPerson]);
+  
+  // Get role-specific styling
+  const getRoleStyles = useCallback((role) => {
+    switch(role) {
+      case 'CR':
+        return { 
+          icon: <FaUsers />, 
+          text: 'Class Representative',
+          color: '#4CAF50', // Green for CR
+          borderColor: '#4CAF50'
+        };
+      case 'Developer':
+        return { 
+          icon: <FaCode />, 
+          text: 'Developer',
+          color: '#2196F3', // Blue for Developer
+          borderColor: '#2196F3'
+        };
+      default:
+        return { 
+          icon: <FaStar />, 
+          text: role,
+          color: '#E50914', // Default red
+          borderColor: '#E50914'
+        };
+    }
+  }, []);
+
+  // Handle navigation to student profile
+  const handleProfileClick = useCallback((studentId) => {
+    playSound('click');
+    navigate(`/student/${studentId}`);
+  }, [navigate, playSound]);
+
   return (
     <PageContainer>
       <PageHeader>
-        <PageTitle 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          Browse Students
-        </PageTitle>
+        <PageTitleRow>
+          <PageTitle 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            Browse Students
+          </PageTitle>
+          
+          {/* Key People Section - Moved here */}
+          {!loading && !error && (
+            <KeyPeopleFloatingSection
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <KeyPeopleList>
+                {keyPeople.map((person, index) => {
+                  const roleStyle = getRoleStyles(person.role);
+                  return (
+                    <KeyPersonItem
+                      key={person.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ 
+                        opacity: 1,
+                        boxShadow: [
+                          "0px 0px 0px rgba(0,0,0,0)",
+                          `0px 0px 8px rgba(${roleStyle.color === '#4CAF50' ? '76,175,80' : roleStyle.color === '#2196F3' ? '33,150,243' : '229,9,20'},0.3)`,
+                          "0px 0px 0px rgba(0,0,0,0)"
+                        ]
+                      }}
+                      transition={{ 
+                        duration: 0.5, 
+                        delay: 0.4 + (index * 0.1),
+                        boxShadow: {
+                          duration: 2,
+                          repeat: Infinity,
+                          repeatType: "reverse"
+                        }
+                      }}
+                      whileHover={{ 
+                        scale: 1.05,
+                        backgroundColor: `rgba(${roleStyle.color === '#4CAF50' ? '76,175,80' : roleStyle.color === '#2196F3' ? '33,150,243' : '229,9,20'},0.15)`
+                      }}
+                      onClick={() => handleProfileClick(person.id)}
+                      onMouseEnter={() => playSound('hover')}
+                    >
+                      <KeyPersonAvatar 
+                        borderColor={roleStyle.borderColor}
+                        animate={{ 
+                          borderWidth: ["2px", "3px", "2px"],
+                          scale: [1, 1.05, 1]
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          repeatType: "reverse",
+                          delay: index * 0.5
+                        }}
+                      >
+                        <img src={person.image} alt={person.name} />
+                      </KeyPersonAvatar>
+                      <KeyPersonDetails>
+                        <KeyPersonName>{person.name}</KeyPersonName>
+                        <KeyPersonRole color={roleStyle.color}>
+                          {roleStyle.icon} {roleStyle.text}
+                        </KeyPersonRole>
+                      </KeyPersonDetails>
+                    </KeyPersonItem>
+                  );
+                })}
+              </KeyPeopleList>
+            </KeyPeopleFloatingSection>
+          )}
+        </PageTitleRow>
+        
         <SearchContainer
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

@@ -589,6 +589,65 @@ const About = ({ soundContext }) => {
                 Discover your rollmates. Strengthen your network. Grow together with EEEFlix.
               </AboutParagraph>
             </motion.div>
+            
+            {/* Developer Credit Section */}
+            <motion.div 
+              variants={itemVariants}
+              style={{ 
+                marginTop: '3rem',
+                padding: '2rem',
+                borderTop: '1px solid rgba(229, 9, 20, 0.3)',
+                borderBottom: '1px solid rgba(229, 9, 20, 0.3)',
+                background: 'linear-gradient(135deg, rgba(229, 9, 20, 0.05) 0%, rgba(229, 9, 20, 0.1) 50%, rgba(20, 20, 20, 0) 100%)',
+                borderRadius: '8px',
+                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2), 0 0 20px rgba(229, 9, 20, 0.1)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', gap: '1.5rem' }}>
+                <div style={{ 
+                  width: '180px', 
+                  height: '180px', 
+                  borderRadius: '50%', 
+                  overflow: 'hidden',
+                  border: '3px solid #E50914',
+                  boxShadow: '0 10px 25px rgba(229, 9, 20, 0.3)'
+                }}>
+                  <img 
+                    src="/assets/images/avatar/avatar-30.jpg" 
+                    alt="MD. SHAFIN KHAN" 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <h3 style={{ 
+                    color: '#FFFFFF', 
+                    fontSize: '1.6rem', 
+                    marginBottom: '0.5rem',
+                    fontWeight: '700',
+                    letterSpacing: '0.5px',
+                    textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',
+                  }}>MD. SHAFIN KHAN</h3>
+                  <p style={{ 
+                    color: '#E50914', 
+                    fontSize: '1.1rem', 
+                    fontWeight: '500',
+                    marginBottom: '1rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px',
+                  }}>Developer & Designer</p>
+                  <p style={{ 
+                    color: '#B3B3B3', 
+                    fontStyle: 'italic',
+                    maxWidth: '600px',
+                    margin: '0 auto',
+                    lineHeight: '1.6'
+                  }}>
+                    This website was created and brought to life by Shafin Khan, a proud member of the EEE department, 
+                    combining his passion for technology and design to create a platform that connects students across all years.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
           </AboutText>
         </AboutContent>
       </Section>
