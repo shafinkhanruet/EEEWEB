@@ -48,6 +48,19 @@ img {
   height: auto;
 }
 
+/* Specific styles for mobile students grid */
+@media (max-width: 480px) {
+  .mobile-action-bar {
+    width: 100%;
+  }
+  
+  /* Allow horizontal scroll on students page in case grid is too tight */
+  .students-container {
+    overflow-x: visible;
+    padding: 0 0.5rem;
+  }
+}
+
 /* Improved touch targets for mobile */
 @media (max-width: 768px) {
   button, 
