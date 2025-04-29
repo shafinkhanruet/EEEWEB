@@ -51,13 +51,8 @@ const StudentsGrid = styled.div`
   gap: 2rem;
   
   @media (max-width: 768px) {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-  
-  @media (max-width: 480px) {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
   }
 `;
 
@@ -145,14 +140,9 @@ const StudentImage = styled(motion.div)`
   
   // Special effect for mobile tap
   @media (max-width: 768px) {
-    height: 180px;
     &::after {
       opacity: 0.5;
     }
-  }
-  
-  @media (max-width: 480px) {
-    height: 150px;
   }
 `;
 
@@ -164,11 +154,7 @@ const StudentInfo = styled.div`
   position: relative;
   
   @media (max-width: 768px) {
-    padding: 1rem;
-  }
-  
-  @media (max-width: 480px) {
-    padding: 0.75rem;
+    padding: 1.2rem;
   }
 `;
 
@@ -179,11 +165,6 @@ const StudentName = styled.h3`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  
-  @media (max-width: 480px) {
-    font-size: 1rem;
-    margin-bottom: 0.3rem;
-  }
 `;
 
 const StudentDetails = styled.div`
@@ -197,20 +178,6 @@ const StudentDetails = styled.div`
   svg {
     color: ${({ theme }) => theme.colors.accent};
   }
-  
-  @media (max-width: 768px) {
-    margin-bottom: 0.8rem;
-  }
-  
-  @media (max-width: 480px) {
-    font-size: 0.8rem;
-    margin-bottom: 0.6rem;
-    gap: 0.3rem;
-    
-    svg {
-      font-size: 0.9rem;
-    }
-  }
 `;
 
 const ActionBar = styled.div`
@@ -218,11 +185,6 @@ const ActionBar = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-top: auto;
-  
-  @media (max-width: 480px) {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
 `;
 
 const ViewButton = styled(motion.a)`
@@ -245,18 +207,12 @@ const ViewButton = styled(motion.a)`
   @media (max-width: 768px) {
     width: 100%;
     text-align: center;
-    padding: 0.7rem 0.5rem;
+    padding: 0.7rem 1rem;
     border-radius: 50px;
-    font-size: 0.9rem;
     
     &:active {
       transform: scale(0.95);
     }
-  }
-  
-  @media (max-width: 480px) {
-    padding: 0.5rem 0.3rem;
-    font-size: 0.8rem;
   }
 `;
 
@@ -336,54 +292,6 @@ const studentsData = [
     image: 'https://via.placeholder.com/300x250?text=Student+6',
     featured: true,
   },
-  {
-    id: 7,
-    name: 'Ava Garcia',
-    major: 'Documentary',
-    year: 'Senior',
-    image: 'https://via.placeholder.com/300x250?text=Student+7',
-    featured: false,
-  },
-  {
-    id: 8,
-    name: 'Michael Lee',
-    major: 'Animation',
-    year: 'Sophomore',
-    image: 'https://via.placeholder.com/300x250?text=Student+8',
-    featured: true,
-  },
-  {
-    id: 9,
-    name: 'Sarah White',
-    major: 'Film Editing',
-    year: 'Junior',
-    image: 'https://via.placeholder.com/300x250?text=Student+9',
-    featured: false,
-  },
-  {
-    id: 10,
-    name: 'David Kim',
-    major: 'Sound Design',
-    year: 'Senior',
-    image: 'https://via.placeholder.com/300x250?text=Student+10',
-    featured: false,
-  },
-  {
-    id: 11,
-    name: 'Emily Taylor',
-    major: 'Photography',
-    year: 'Freshman',
-    image: 'https://via.placeholder.com/300x250?text=Student+11',
-    featured: true,
-  },
-  {
-    id: 12,
-    name: 'Daniel Chen',
-    major: 'Production Design',
-    year: 'Junior',
-    image: 'https://via.placeholder.com/300x250?text=Student+12',
-    featured: false,
-  },
 ];
 
 const Students = () => {
@@ -445,7 +353,7 @@ const Students = () => {
   };
 
   return (
-    <PageContainer className="students-container">
+    <PageContainer>
       <PageHeader>
         <Title>Our Talented Students</Title>
         <Subtitle>
@@ -486,7 +394,7 @@ const Students = () => {
                 <FaFilm />
                 {student.year}
               </StudentDetails>
-              <ActionBar className="mobile-action-bar">
+              <ActionBar>
                 <ViewButton 
                   href={`/student/${student.id}`}
                   variants={buttonVariants}

@@ -63,7 +63,7 @@ const ProfileContainer = styled(motion.div)`
   overflow: hidden;
   padding: 2rem;
   background: #141414;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(229, 9, 20, 0.15);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(229, 9, 20, 0.1);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(40, 40, 40, 0.5);
   
@@ -73,14 +73,14 @@ const ProfileContainer = styled(motion.div)`
     position: absolute;
     inset: 0;
     background-image: 
-      radial-gradient(circle at 10% 20%, rgba(229, 9, 20, 0.06) 0%, transparent 25%),
-      radial-gradient(circle at 80% 30%, rgba(229, 9, 20, 0.06) 0%, transparent 25%),
-      radial-gradient(circle at 30% 60%, rgba(229, 9, 20, 0.06) 0%, transparent 25%),
-      radial-gradient(circle at 70% 80%, rgba(229, 9, 20, 0.06) 0%, transparent 25%);
+      radial-gradient(circle at 10% 20%, rgba(229, 9, 20, 0.03) 0%, transparent 25%),
+      radial-gradient(circle at 80% 30%, rgba(229, 9, 20, 0.03) 0%, transparent 25%),
+      radial-gradient(circle at 30% 60%, rgba(229, 9, 20, 0.03) 0%, transparent 25%),
+      radial-gradient(circle at 70% 80%, rgba(229, 9, 20, 0.03) 0%, transparent 25%);
     background-size: 200% 200%;
     z-index: -1;
-    opacity: 0.9;
-    animation: netflixBgPattern 15s ease infinite alternate;
+    opacity: 0.7;
+    animation: netflixBgPattern 20s ease infinite alternate;
     mix-blend-mode: soft-light;
   }
   
@@ -91,11 +91,11 @@ const ProfileContainer = styled(motion.div)`
     left: 0;
     right: 0;
     top: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(229, 9, 20, 0.9), transparent);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(229, 9, 20, 0.6), transparent);
     z-index: 3;
-    animation: netflixBorderPulse 4s infinite ease-in-out;
-    opacity: 0.9;
+    animation: netflixBorderPulse 5s infinite ease-in-out;
+    opacity: 0.7;
     filter: blur(0.5px);
   }
   
@@ -106,13 +106,13 @@ const ProfileContainer = styled(motion.div)`
     border-radius: 14px;
     background: radial-gradient(
       circle at 50% 50%,
-      rgba(229, 9, 20, 0.5),
+      rgba(229, 9, 20, 0.3),
       transparent 70%
     );
     filter: blur(10px);
-    opacity: 0.6;
+    opacity: 0.4;
     z-index: -1;
-    animation: netflixOuterGlow 4s ease-in-out infinite;
+    animation: netflixOuterGlow 5s ease-in-out infinite;
     pointer-events: none;
   }
   
@@ -122,15 +122,15 @@ const ProfileContainer = styled(motion.div)`
     inset: 0;
     border-radius: 12px;
     padding: 1px;
-    background: linear-gradient(90deg, rgba(229, 9, 20, 0.6), rgba(255, 255, 255, 0.15), rgba(229, 9, 20, 0.6));
+    background: linear-gradient(90deg, rgba(229, 9, 20, 0.4), rgba(255, 255, 255, 0.1), rgba(229, 9, 20, 0.4));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     z-index: 1;
     pointer-events: none;
-    opacity: 0.9;
-    animation: netflixBorderRotate 8s linear infinite;
+    opacity: 0.7;
+    animation: netflixBorderRotate 12s linear infinite;
   }
   
   /* Netflix particles effect */
@@ -138,19 +138,19 @@ const ProfileContainer = styled(motion.div)`
     position: absolute;
     inset: 0;
     background-image: 
-      radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.12) 0%, transparent 1%),
-      radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.12) 0%, transparent 1%),
-      radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.12) 0%, transparent 1%),
-      radial-gradient(circle at 70% 50%, rgba(255, 255, 255, 0.12) 0%, transparent 1%),
-      radial-gradient(circle at 90% 30%, rgba(255, 255, 255, 0.12) 0%, transparent 1%),
-      radial-gradient(circle at 20% 60%, rgba(255, 255, 255, 0.12) 0%, transparent 1%),
-      radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.12) 0%, transparent 1%),
-      radial-gradient(circle at 60% 70%, rgba(255, 255, 255, 0.12) 0%, transparent 1%),
-      radial-gradient(circle at 80% 90%, rgba(255, 255, 255, 0.12) 0%, transparent 1%);
+      radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.08) 0%, transparent 1%),
+      radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.08) 0%, transparent 1%),
+      radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 1%),
+      radial-gradient(circle at 70% 50%, rgba(255, 255, 255, 0.08) 0%, transparent 1%),
+      radial-gradient(circle at 90% 30%, rgba(255, 255, 255, 0.08) 0%, transparent 1%),
+      radial-gradient(circle at 20% 60%, rgba(255, 255, 255, 0.08) 0%, transparent 1%),
+      radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 1%),
+      radial-gradient(circle at 60% 70%, rgba(255, 255, 255, 0.08) 0%, transparent 1%),
+      radial-gradient(circle at 80% 90%, rgba(255, 255, 255, 0.08) 0%, transparent 1%);
     background-size: 150% 150%;
     z-index: -1;
-    opacity: 0.9;
-    animation: netflixParticles 20s linear infinite;
+    opacity: 0.7;
+    animation: netflixParticles 30s linear infinite;
     pointer-events: none;
   }
   
@@ -161,38 +161,16 @@ const ProfileContainer = styled(motion.div)`
     left: 0;
     right: 0;
     height: 150px;
-    background: radial-gradient(ellipse at center bottom, rgba(229, 9, 20, 0.25), transparent 70%);
-    opacity: 0.7;
+    background: radial-gradient(ellipse at center bottom, rgba(229, 9, 20, 0.15), transparent 70%);
+    opacity: 0.5;
     z-index: -1;
     pointer-events: none;
-    animation: netflixGlowPulse 4s ease-in-out infinite;
-  }
-  
-  /* Netflix scanline effect */
-  .netflix-scanline {
-    position: absolute;
-    width: 120%;
-    height: 8px;
-    background: linear-gradient(
-      to right,
-      transparent 0%,
-      rgba(229, 9, 20, 0.1) 10%,
-      rgba(229, 9, 20, 0.5) 50%,
-      rgba(229, 9, 20, 0.1) 90%,
-      transparent 100%
-    );
-    opacity: 0.3;
-    filter: blur(1px);
-    z-index: 4;
-    left: -10%;
-    top: -20%;
-    animation: netflixScanline 6s linear infinite;
-    pointer-events: none;
+    animation: netflixGlowPulse 5s ease-in-out infinite;
   }
   
   @keyframes netflixBorderPulse {
-    0%, 100% { opacity: 0.6; filter: blur(0.5px); }
-    50% { opacity: 1; filter: blur(1px); }
+    0%, 100% { opacity: 0.4; filter: blur(0.5px); }
+    50% { opacity: 0.7; filter: blur(1px); }
   }
   
   @keyframes netflixBorderRotate {
@@ -201,13 +179,13 @@ const ProfileContainer = styled(motion.div)`
   }
   
   @keyframes netflixGlowPulse {
-    0%, 100% { opacity: 0.5; transform: translateY(5px); }
-    50% { opacity: 0.9; transform: translateY(0); }
+    0%, 100% { opacity: 0.3; transform: translateY(5px); }
+    50% { opacity: 0.6; transform: translateY(0); }
   }
   
   @keyframes netflixOuterGlow {
-    0%, 100% { opacity: 0.4; filter: blur(8px); }
-    50% { opacity: 0.7; filter: blur(12px); }
+    0%, 100% { opacity: 0.3; filter: blur(8px); }
+    50% { opacity: 0.5; filter: blur(12px); }
   }
   
   @keyframes netflixBgPattern {
@@ -224,11 +202,6 @@ const ProfileContainer = styled(motion.div)`
     50% { background-position: 50% 50%; }
     75% { background-position: 75% 75%; }
     100% { background-position: 100% 100%; }
-  }
-  
-  @keyframes netflixScanline {
-    0% { top: -20%; }
-    100% { top: 120%; }
   }
   
   @media (max-width: 768px) {
@@ -632,9 +605,9 @@ export default function StudentProfile() {
             variants={itemVariants}
             whileHover={{ 
               scale: 1.05, 
-              backgroundColor: "rgba(229, 9, 20, 0.1)",
-              borderColor: "rgba(229, 9, 20, 0.8)",
-              color: "rgba(229, 9, 20, 0.8)"
+              backgroundColor: "rgba(229, 9, 20, 0.05)",
+              borderColor: "rgba(229, 9, 20, 0.6)",
+              color: "rgba(229, 9, 20, 0.7)"
             }}
             whileTap={{ scale: 0.95 }}
           >
@@ -649,7 +622,6 @@ export default function StudentProfile() {
           <div className="netflix-border" />
           <div className="netflix-particles" />
           <div className="netflix-bottom-glow" />
-          <div className="netflix-scanline" />
           <ImageContainer
             variants={imageVariants}
           >
