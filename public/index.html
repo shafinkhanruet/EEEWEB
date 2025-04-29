@@ -12,20 +12,25 @@
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     
+    <!-- Force HTTPS redirect for Vercel -->
+    <script>
+      // Redirect HTTP to HTTPS on Vercel platform
+      if (window.location.hostname.includes('vercel.app') && window.location.protocol === 'http:') {
+        window.location.href = window.location.href.replace('http:', 'https:');
+      }
+    </script>
+    
     <!-- Preconnect to external domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://assets.mixkit.co" crossorigin>
     
     <!-- Preload critical fonts - only most essential weights -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" as="style">
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" as="style">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&display=swap&subset=bengali" as="style">
     
     <!-- Load fonts with display=swap for better performance -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;500&family=Hind+Siliguri:wght@400;500;600&display=swap&subset=bengali" rel="stylesheet">
-    
-    <!-- Direct load of Hind Siliguri for Bengali text -->
-    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&display=swap&subset=bengali" rel="stylesheet">
     
     <!-- Fallback for font loading -->
     <noscript>
@@ -67,10 +72,19 @@
       .spinner {
         width: 40px;
         height: 40px;
-        border: 4px solid rgba(30, 87, 177, 0.3);
+        border: 4px solid rgba(229, 9, 20, 0.3);
         border-radius: 50%;
-        border-top-color: #1E57B1;
+        border-top-color: #e50914;
         animation: spin 1s ease-in-out infinite;
+      }
+      
+      .logo-text {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 24px;
+        color: #e50914;
+        margin-bottom: 16px;
+        letter-spacing: 2px;
       }
       
       @keyframes spin {
@@ -99,9 +113,10 @@
     <!-- Add resource hints for performance -->
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link rel="dns-prefetch" href="https://assets.mixkit.co">
     
     <!-- Cache control meta tag -->
-    <meta http-equiv="Cache-Control" content="max-age=86400" />
+    <meta http-equiv="Cache-Control" content="public, max-age=86400" />
     
     <title>EEEFlix - Premium EEE Platform</title>
   </head>
@@ -110,47 +125,28 @@
     <div id="root">
       <!-- Fallback loading spinner -->
       <div class="loading-spinner">
+        <div class="logo-text">EEEFLIX</div>
         <div class="spinner"></div>
       </div>
     </div>
     
     <!-- Add browser hints for performance optimizations -->
     <script type="module">
-      // Tell browser which parts of the page are important
+      // Performance optimizations
       document.addEventListener('DOMContentLoaded', () => {
-        // Ensure Bengali fonts are properly loaded
+        // Skip splash screen on Vercel production to avoid loading issues
+        if (window.location.hostname.includes('vercel.app')) {
+          sessionStorage.setItem('hasSeenSplash', 'true');
+        }
+        
+        // Ensure fonts are properly loaded
         document.fonts.ready.then(() => {
           console.log('Fonts are loaded and ready');
           document.body.classList.add('fonts-loaded');
         });
         
-        if ('connection' in navigator) {
-          // Only add resource hints if on slow connections
-          if (navigator.connection.effectiveType === 'slow-2g' || 
-              navigator.connection.effectiveType === '2g' ||
-              navigator.connection.saveData) {
-            // Defer non-critical resources
-            const deferImages = () => {
-              const lazyImages = document.querySelectorAll('img[loading="lazy"]');
-              if ('IntersectionObserver' in window) {
-                const imageObserver = new IntersectionObserver((entries) => {
-                  entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                      const img = entry.target;
-                      img.src = img.dataset.src;
-                      imageObserver.unobserve(img);
-                    }
-                  });
-                });
-                
-                lazyImages.forEach(img => imageObserver.observe(img));
-              }
-            };
-            
-            // Call the function after a delay
-            setTimeout(deferImages, 1000);
-          }
-        }
+        // Help prevent FOUC (Flash of Unstyled Content)
+        document.documentElement.classList.add('js-loaded');
       });
     </script>
   </body>

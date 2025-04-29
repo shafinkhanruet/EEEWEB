@@ -6,14 +6,24 @@ import styled, { ThemeProvider, createGlobalStyle } from 'styled-components';
 // Theme
 import { darkTheme } from './theme';
 
-// Components
+// Context
+import { SoundContext } from './contexts/SoundContext';
+
+// Components - Import synchronously for faster initial load
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import LoadingSpinner from './components/LoadingSpinner';
-import SplashScreen from './components/SplashScreen';
 
-// Context
-import { SoundContext, SoundProvider } from './contexts/SoundContext';
+// Lazy loaded components
+const SplashScreen = lazy(() => import('./components/SplashScreen'));
+const ParallaxBackground = lazy(() => import('./components/ParallaxBackground'));
+const Home = lazy(() => import('./pages/Home'));
+const Students = lazy(() => import('./pages/Students'));
+const About = lazy(() => import('./pages/About'));
+const Contact = lazy(() => import('./pages/Contact'));
+const StudentProfile = lazy(() => import('./pages/StudentProfile'));
+const Resources = lazy(() => import('./pages/Resources'));
+const StudentContactManager = lazy(() => import('./components/StudentContactManager'));
 
 // Add page transition styles
 const TransitionStyle = createGlobalStyle`
@@ -34,23 +44,6 @@ const TransitionStyle = createGlobalStyle`
     transition: opacity 300ms;
   }
 `;
-
-// Lazy load ParallaxBackground for faster initial paint
-const ParallaxBackground = lazy(() => import('./components/ParallaxBackground'));
-
-// Lazy load pages with improved loading
-const Home = lazy(() => 
-  import('./pages/Home').then(module => {
-    // Add a slight delay to ensure loading spinner shows and doesn't flash
-    return new Promise(resolve => setTimeout(() => resolve(module), 500));
-  })
-);
-const Students = lazy(() => import('./pages/Students'));
-const About = lazy(() => import('./pages/About'));
-const Contact = lazy(() => import('./pages/Contact'));
-const StudentProfile = lazy(() => import('./pages/StudentProfile'));
-const Resources = lazy(() => import('./pages/Resources'));
-const StudentContactManager = lazy(() => import('./components/StudentContactManager'));
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -81,7 +74,7 @@ const BackgroundContainer = React.memo(() => (
 
 function App() {
   const location = useLocation();
-  const [showSplash, setShowSplash] = useState(false); // Start with splash disabled by default
+  const [showSplash, setShowSplash] = useState(false); 
   const [contentReady, setContentReady] = useState(false);
   const [splashError, setSplashError] = useState(false);
   
@@ -89,28 +82,30 @@ function App() {
   const [showUI, setShowUI] = useState(false);
   
   useEffect(() => {
-    // Safety timeout - ensure content is shown after 8 seconds regardless of splash screen
+    // Immediately start loading the main content
+    setContentReady(true);
+    
+    // Safety timeout - ensure content is shown quickly
     const safetyTimer = setTimeout(() => {
-      if (!contentReady) {
-        console.log('Safety timeout triggered - forcing app to show content');
+      if (!showUI) {
+        console.log('Safety timeout triggered - forcing app to show UI');
         setSplashError(true);
         setShowSplash(false);
         setShowUI(true);
-        setContentReady(true);
       }
-    }, 8000);
+    }, 5000);
 
-    // Check if user has seen the splash screen before
+    // Skip splash screen on Vercel production to avoid loading issues
+    const isVercelProduction = window.location.hostname.includes('vercel.app');
     const hasSeenSplash = sessionStorage.getItem('hasSeenSplash');
     
-    if (hasSeenSplash) {
-      // Skip splash if already seen
+    if (hasSeenSplash || isVercelProduction) {
+      // Skip splash if already seen or on Vercel
       setShowSplash(false);
       setShowUI(true);
-      setContentReady(true);
     } else {
-      // Show splash only if not seen before
-      setShowSplash(true);
+      // Show splash only if not seen before and not on Vercel
+      setTimeout(() => setShowSplash(true), 100);
     }
     
     return () => clearTimeout(safetyTimer);
@@ -123,22 +118,12 @@ function App() {
       sessionStorage.setItem('hasSeenSplash', 'true');
       
       setShowSplash(false);
-      
-      // Slight delay before showing UI elements
-      setTimeout(() => {
-        setShowUI(true);
-      }, 300);
-      
-      // Delay before showing content to ensure smooth transition
-      setTimeout(() => {
-        setContentReady(true);
-      }, 500);
+      setShowUI(true);
     } catch (error) {
       console.error('Error in splash completion:', error);
       // Ensure the app continues to function even if there's an error
       setShowSplash(false);
       setShowUI(true);
-      setContentReady(true);
     }
   };
 
@@ -148,7 +133,6 @@ function App() {
     setSplashError(true);
     setShowSplash(false);
     setShowUI(true);
-    setContentReady(true);
   };
 
   // Create a simple sound context value with disabled functionality
@@ -160,18 +144,14 @@ function App() {
 
   // Animation variants for main content
   const contentVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0 },
     visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: {
-        duration: 0.5,
-        ease: [0.43, 0.13, 0.23, 0.96]
-      }
+      opacity: 1,
+      transition: { duration: 0.3 }
     },
     exit: { 
       opacity: 0,
-      transition: { duration: 0.3 }
+      transition: { duration: 0.2 }
     }
   };
 
@@ -181,19 +161,23 @@ function App() {
       <SoundContext.Provider value={soundContextValue}>
         <AppContainer>
           {showSplash && (
-            <ErrorBoundary onError={handleSplashError}>
-              <SplashScreen onComplete={handleSplashComplete} />
-            </ErrorBoundary>
+            <Suspense fallback={<LoadingSpinner />}>
+              <ErrorBoundary onError={handleSplashError}>
+                <SplashScreen onComplete={handleSplashComplete} />
+              </ErrorBoundary>
+            </Suspense>
           )}
           
-          <BackgroundContainer />
+          <Suspense fallback={null}>
+            <BackgroundContainer />
+          </Suspense>
           
           <AnimatePresence>
             {showUI && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.3 }}
               >
                 <Navbar />
               </motion.div>
@@ -202,19 +186,19 @@ function App() {
           
           <MainContent
             initial="hidden"
-            animate={contentReady ? "visible" : "hidden"}
+            animate={contentReady && showUI ? "visible" : "hidden"}
             exit="exit"
             variants={contentVariants}
           >
             <AnimatePresence mode="wait">
-              {contentReady ? (
+              {contentReady && (
                 <Suspense fallback={<LoadingSpinner />}>
                   <PageTransition
                     key={location.pathname}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 0.4 }}
+                    transition={{ duration: 0.3 }}
                   >
                     <Routes location={location}>
                       <Route path="/" element={<Home />} />
@@ -227,19 +211,16 @@ function App() {
                     </Routes>
                   </PageTransition>
                 </Suspense>
-              ) : (
-                // Show a loading spinner while waiting for content
-                <LoadingSpinner />
               )}
             </AnimatePresence>
           </MainContent>
           
           <AnimatePresence>
-            {showUI && contentReady && (
+            {showUI && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
+                transition={{ duration: 0.3 }}
               >
                 <Footer />
               </motion.div>
