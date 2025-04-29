@@ -116,7 +116,7 @@ const createStudentData = () => {
     "MD. ABID HOSSAIN",
     "MD. HARUN TALUKDER",
     "MD. PROTIK HASAN",
-    "RAF RAFIN KHAN KHAN",
+    "RAFIN KHAN",
     "TAHMIDUL HAQUE SAIF",
     "MD. SAJIDUR RAHMAN",
     "MD. RAKIN ABSAR RUDDRO",
