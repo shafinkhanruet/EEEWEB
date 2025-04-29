@@ -3,7 +3,7 @@ import StyledComponentsRegistry from './components/StyledComponentsRegistry';
 import { ThemeProvider } from 'styled-components';
 import { darkTheme } from './styles/theme';
 import NavbarPremium from './components/NavbarPremium';
-import Footer from './components/Footer';
+import FooterPremium from './components/FooterPremium';
 import './styles/globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
             <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
               <NavbarPremium />
               <main style={{ flex: 1 }}>{children}</main>
-              <Footer />
+              <FooterPremium />
             </div>
           </ThemeProvider>
         </StyledComponentsRegistry>
