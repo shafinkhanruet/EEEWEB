@@ -4,6 +4,14 @@ import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaUser, FaCrown, FaCode } from 'react-icons/fa';
 
+// Add global scroll behavior
+const GlobalStyle = styled.div`
+  * {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+`;
+
 const CardContainer = styled(motion.div)`
   position: relative;
   width: 280px;
@@ -22,6 +30,11 @@ const CardContainer = styled(motion.div)`
   isolation: isolate;
   animation: netflixFloat 6s ease-in-out infinite;
   z-index: 1;
+  
+  @media (max-width: 480px) {
+    width: 240px;
+    height: 340px;
+  }
 
   /* Netflix signature red border glow */
   &:before {
@@ -470,6 +483,11 @@ const UserName = styled(motion.h3)`
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   
+  @media (max-width: 480px) {
+    font-size: 1.1rem;
+    letter-spacing: 0.3px;
+  }
+  
   &:after {
     content: '';
     position: absolute;
@@ -515,6 +533,11 @@ const UserId = styled(motion.span)`
   );
   -webkit-background-clip: text;
   background-clip: text;
+  
+  @media (max-width: 480px) {
+    font-size: 0.85rem;
+    letter-spacing: 0.3px;
+  }
   
   ${CardContainer}:hover & {
     transform: translateY(-4px);
@@ -650,70 +673,72 @@ const StudentCard = ({ student, delay = 0, playSound }) => {
   }
 
   return (
-    <Link 
-      to={`/student/${encodeURIComponent(student.id)}`} 
-      style={{ textDecoration: 'none' }}
-      onClick={(e) => {
-        if (!student || !student.id) {
-          e.preventDefault();
-          console.error("Cannot navigate - student or student ID is missing");
-          return;
-        }
-        if (playSound) playSound('click');
-      }}
-    >
-      <CardContainer
-        ref={cardRef}
-        variants={cardVariants}
-        initial="hidden"
-        animate="visible"
-        onHoverStart={() => {
-          setIsHovered(true);
-          if (playSound) playSound('hover');
+    <GlobalStyle>
+      <Link 
+        to={`/student/${encodeURIComponent(student.id)}`} 
+        style={{ textDecoration: 'none' }}
+        onClick={(e) => {
+          if (!student || !student.id) {
+            e.preventDefault();
+            console.error("Cannot navigate - student or student ID is missing");
+            return;
+          }
+          if (playSound) playSound('click');
         }}
-        onHoverEnd={() => {
-          setIsHovered(false);
-          setIsBottomHovered(false);
-        }}
-        onMouseMove={handleMouseMove}
-        isBottomHovered={isBottomHovered}
       >
-        <div className="netflix-outer-glow" />
-        <div className="netflix-border" />
-        <div className="netflix-reflection" />
-        <div className="netflix-vignette" />
-        <div className="netflix-scanline" />
-        <div className="netflix-bottom-glow" />
-        <ImageContainer>
-          {!imageError && imagePath ? (
-            <ProfileImage 
-              image={imagePath}
-              onError={() => setImageError(true)}
-            />
-          ) : (
-            <DefaultAvatar>
-              <FaUser />
-            </DefaultAvatar>
-          )}
-          {student.role && (
-            <PremiumBadge
-              variants={premiumVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              {getPremiumIcon(student.role)}
-            </PremiumBadge>
-          )}
-        </ImageContainer>
-        
-        <ContentContainer>
-          <UserInfo>
-            <UserName>{student.name || `Student ${student.id}`}</UserName>
-            <UserId>ID: {student.id}</UserId>
-          </UserInfo>
-        </ContentContainer>
-      </CardContainer>
-    </Link>
+        <CardContainer
+          ref={cardRef}
+          variants={cardVariants}
+          initial="hidden"
+          animate="visible"
+          onHoverStart={() => {
+            setIsHovered(true);
+            if (playSound) playSound('hover');
+          }}
+          onHoverEnd={() => {
+            setIsHovered(false);
+            setIsBottomHovered(false);
+          }}
+          onMouseMove={handleMouseMove}
+          isBottomHovered={isBottomHovered}
+        >
+          <div className="netflix-outer-glow" />
+          <div className="netflix-border" />
+          <div className="netflix-reflection" />
+          <div className="netflix-vignette" />
+          <div className="netflix-scanline" />
+          <div className="netflix-bottom-glow" />
+          <ImageContainer>
+            {!imageError && imagePath ? (
+              <ProfileImage 
+                image={imagePath}
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <DefaultAvatar>
+                <FaUser />
+              </DefaultAvatar>
+            )}
+            {student.role && (
+              <PremiumBadge
+                variants={premiumVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                {getPremiumIcon(student.role)}
+              </PremiumBadge>
+            )}
+          </ImageContainer>
+          
+          <ContentContainer>
+            <UserInfo>
+              <UserName>{student.name || `Student ${student.id}`}</UserName>
+              <UserId>ID: {student.id}</UserId>
+            </UserInfo>
+          </ContentContainer>
+        </CardContainer>
+      </Link>
+    </GlobalStyle>
   );
 };
 

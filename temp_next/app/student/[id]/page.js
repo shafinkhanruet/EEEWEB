@@ -1,17 +1,38 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import { motion } from 'framer-motion';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FaArrowLeft, FaStar, FaFilm, FaAward } from 'react-icons/fa';
 import { useNavbar } from '../../contexts/NavbarContext';
 
+// Add global style for smooth scrolling
+const GlobalScrollStyle = createGlobalStyle`
+  html, body {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
+    font-size: 16px;
+    touch-action: manipulation;
+  }
+
+  @media (max-width: 480px) {
+    html, body {
+      font-size: 14px;
+    }
+  }
+`;
+
 const PageContainer = styled.div`
   padding: 6rem 2rem 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  
+  @media (max-width: 480px) {
+    padding: 4rem 1rem 1rem;
+  }
 `;
 
 const BackButton = styled(motion.button)`
@@ -212,6 +233,13 @@ const ProfileContainer = styled(motion.div)`
   
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 1rem;
+    gap: 1rem;
   }
 `;
 
@@ -240,6 +268,14 @@ const Name = styled(motion.h1)`
   background: ${({ theme }) => theme.colors.gradientGold};
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  
+  @media (max-width: 768px) {
+    font-size: 2rem;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 1.75rem;
+  }
 `;
 
 const Details = styled(motion.div)`
@@ -247,6 +283,11 @@ const Details = styled(motion.div)`
   flex-wrap: wrap;
   gap: 1rem;
   margin-bottom: 1rem;
+  
+  @media (max-width: 480px) {
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
 `;
 
 const DetailItem = styled(motion.div)`
@@ -258,12 +299,24 @@ const DetailItem = styled(motion.div)`
   border-radius: ${({ theme }) => theme.borderRadius.small};
   font-size: 0.9rem;
   color: ${({ theme }) => theme.colors.textSecondary};
+  
+  @media (max-width: 480px) {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    gap: 0.3rem;
+  }
 `;
 
 const Bio = styled(motion.p)`
   line-height: 1.7;
   color: ${({ theme }) => theme.colors.textSecondary};
   margin-bottom: 1.5rem;
+  
+  @media (max-width: 480px) {
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+  }
 `;
 
 const SectionTitle = styled(motion.h2)`
@@ -273,6 +326,12 @@ const SectionTitle = styled(motion.h2)`
   color: ${({ theme }) => theme.colors.textPrimary};
   position: relative;
   
+  @media (max-width: 480px) {
+    font-size: 1.3rem;
+    margin-top: 1.2rem;
+    margin-bottom: 0.8rem;
+  }
+  
   &::after {
     content: '';
     position: absolute;
@@ -281,6 +340,12 @@ const SectionTitle = styled(motion.h2)`
     width: 50px;
     height: 3px;
     background: ${({ theme }) => theme.colors.accent};
+    
+    @media (max-width: 480px) {
+      width: 40px;
+      height: 2px;
+      bottom: -6px;
+    }
   }
 `;
 
@@ -289,6 +354,17 @@ const ProjectsGrid = styled(motion.div)`
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
   margin-top: 1.5rem;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.2rem;
+  }
+  
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
 `;
 
 const ProjectCard = styled(motion.div)`
@@ -324,12 +400,22 @@ const ProjectTitle = styled.h3`
   font-size: 1.1rem;
   margin-bottom: 0.5rem;
   color: ${({ theme }) => theme.colors.textPrimary};
+  
+  @media (max-width: 480px) {
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+  }
 `;
 
 const ProjectDescription = styled.p`
   font-size: 0.9rem;
   color: ${({ theme }) => theme.colors.textSecondary};
   margin-bottom: 0.5rem;
+  
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
+    margin-bottom: 0.3rem;
+  }
 `;
 
 // Animation variants
@@ -527,6 +613,8 @@ export default function StudentProfile() {
   }
 
   return (
+    <>
+    <GlobalScrollStyle />
     <motion.div
       variants={pageVariants}
       initial="initial"
@@ -654,5 +742,6 @@ export default function StudentProfile() {
         </ProfileContainer>
       </PageContainer>
     </motion.div>
+    </>
   );
 } 
