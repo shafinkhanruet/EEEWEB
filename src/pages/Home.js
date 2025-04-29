@@ -313,7 +313,7 @@ const ViewAllButtonWrapper = styled(motion.div)`
 // Add these styled components for the Class Representatives section
 const CRSectionWrapper = styled.div`
   position: relative;
-  padding: 6rem 0;
+  padding: 4rem 0;
   overflow: hidden;
   
   &:before {
@@ -343,37 +343,39 @@ const CRSectionWrapper = styled.div`
 `;
 
 const CRTitle = styled(EnhancedSectionTitle)`
+  font-size: 2.6rem;
+  
   &:after {
-    width: 120px;
+    width: 80px;
   }
 `;
 
 const CRGrid = styled.div`
   display: flex;
   justify-content: center;
-  gap: 4rem;
+  gap: 3rem;
   flex-wrap: wrap;
-  margin: 2rem auto;
-  max-width: 1200px;
+  margin: 1.5rem auto;
+  max-width: 900px;
   padding: 0 2rem;
   
   @media (max-width: 768px) {
-    gap: 3rem;
+    gap: 2rem;
   }
 `;
 
 const CRCard = styled(motion.div)`
   background: rgba(20, 20, 20, 0.6);
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
-  width: 340px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+  width: 280px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(229, 9, 20, 0.2);
   transition: all 0.4s ease;
   
   &:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(229, 9, 20, 0.2);
+    transform: translateY(-8px);
+    box-shadow: 0 16px 35px rgba(0, 0, 0, 0.4), 0 0 20px rgba(229, 9, 20, 0.2);
     border-color: rgba(229, 9, 20, 0.5);
   }
 `;
@@ -381,7 +383,7 @@ const CRCard = styled(motion.div)`
 const CRImageContainer = styled.div`
   width: 100%;
   position: relative;
-  height: 360px;
+  height: 280px;
   overflow: hidden;
   
   img {
@@ -398,51 +400,51 @@ const CRImageContainer = styled.div`
 
 const CRBadge = styled.div`
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 15px;
+  right: 15px;
   background: #E50914;
   color: white;
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 0.8rem;
   border-radius: 30px;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   z-index: 2;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 `;
 
 const CRInfo = styled.div`
-  padding: 1.5rem;
+  padding: 1.2rem;
   text-align: center;
 `;
 
 const CRName = styled.h3`
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-weight: 700;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
   color: white;
 `;
 
 const CRQuote = styled.p`
   color: #B3B3B3;
   font-style: italic;
-  margin: 1rem 0;
-  line-height: 1.6;
-  font-size: 0.95rem;
+  margin: 0.8rem 0;
+  line-height: 1.4;
+  font-size: 0.85rem;
 `;
 
 const CRContactInfo = styled.div`
   display: flex;
   justify-content: center;
-  gap: 1rem;
-  margin-top: 1.2rem;
+  gap: 0.8rem;
+  margin-top: 1rem;
 `;
 
 const CRContactButton = styled(motion.a)`
-  width: 40px;
-  height: 40px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.1);
   display: flex;
@@ -610,11 +612,11 @@ const Home = () => {
         <CRSectionWrapper>
           <motion.div
             variants={itemVariants}
-            style={{ textAlign: 'center', marginBottom: '3rem' }}
+            style={{ textAlign: 'center', marginBottom: '2rem' }}
           >
             <CRTitle>Class Representatives</CRTitle>
-            <EnhancedSectionSubtitle>
-              Meet our dedicated Class Representatives who work tirelessly to support their fellow students and act as a bridge between students and faculty.
+            <EnhancedSectionSubtitle style={{ fontSize: '1.1rem', margin: '2rem auto 1rem' }}>
+              Meet our dedicated Class Representatives who bridge students and faculty.
             </EnhancedSectionSubtitle>
           </motion.div>
           
@@ -628,12 +630,12 @@ const Home = () => {
                 <CRImageContainer>
                   <img src={cr.image} alt={cr.name} />
                   <CRBadge>
-                    <FaUsers /> Class Representative
+                    <FaUsers /> Class Rep
                   </CRBadge>
                 </CRImageContainer>
                 <CRInfo>
                   <CRName>{cr.name}</CRName>
-                  <CRQuote>"{cr.quote}"</CRQuote>
+                  <CRQuote>"{cr.quote.length > 100 ? cr.quote.slice(0, 100) + '...' : cr.quote}"</CRQuote>
                   <CRContactInfo>
                     <CRContactButton 
                       href={`mailto:${cr.contactInfo.email}`}
