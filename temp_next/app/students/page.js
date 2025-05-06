@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import Link from 'next/link';
-import { FaStar, FaGraduationCap, FaFilm, FaHeart } from 'react-icons/fa';
+import { FaStar, FaGraduationCap, FaFilm, FaHeart, FaCode, FaUsers } from 'react-icons/fa';
 
 const PageContainer = styled.div`
   padding: 6rem 2rem 2rem;
@@ -294,6 +294,165 @@ const studentsData = [
   },
 ];
 
+// New TeamMember components
+const TeamSection = styled.div`
+  margin-bottom: 4rem;
+  position: relative;
+  
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -2rem;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, 
+      rgba(229, 9, 20, 0) 0%, 
+      rgba(229, 9, 20, 0.5) 50%, 
+      rgba(229, 9, 20, 0) 100%
+    );
+  }
+`;
+
+const TeamTitle = styled.h2`
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  text-align: center;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  
+  @media (max-width: 768px) {
+    font-size: 1.6rem;
+    margin-bottom: 1.2rem;
+  }
+`;
+
+const TeamGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  
+  @media (max-width: 992px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+  
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+`;
+
+const TeamCard = styled(motion.div)`
+  background-color: #141414;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(40, 40, 40, 0.5);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  
+  &:hover {
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 15px rgba(229, 9, 20, 0.2);
+    border-color: rgba(229, 9, 20, 0.3);
+  }
+`;
+
+const TeamMemberPhoto = styled.div`
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid ${props => props.borderColor || '#E50914'};
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  margin: 0 auto;
+  transform: translateY(-30px);
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  @media (max-width: 768px) {
+    width: 80px;
+    height: 80px;
+    transform: translateY(-25px);
+  }
+`;
+
+const TeamMemberInfo = styled.div`
+  padding: 0 1.5rem 1.5rem;
+  text-align: center;
+  margin-top: -15px;
+  
+  @media (max-width: 768px) {
+    padding: 0 1rem 1.2rem;
+  }
+`;
+
+const TeamMemberName = styled.h3`
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+  color: white;
+  
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+  }
+`;
+
+const TeamMemberRole = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  margin-bottom: 0.8rem;
+  font-weight: 500;
+  background-color: ${props => props.bgColor || 'rgba(229, 9, 20, 0.1)'};
+  color: ${props => props.textColor || '#E50914'};
+  
+  svg {
+    font-size: 0.9rem;
+  }
+`;
+
+// Team members data
+const teamMembers = [
+  {
+    id: 1,
+    name: 'ABDUL BAKEU BORSHON',
+    role: 'CLASS REPRESENTATIVE',
+    photo: '/assets/images/avatar/avatar-28.jpg',
+    roleColor: '#4CAF50',
+    roleIcon: FaUsers
+  },
+  {
+    id: 2,
+    name: 'MD. SHAFIN KHAN',
+    role: 'DEVELOPER',
+    photo: '/assets/images/avatar/avatar-30.jpg',
+    roleColor: '#2196F3',
+    roleIcon: FaCode
+  },
+  {
+    id: 3,
+    name: 'TAHMIDUL HAQUE SAIF',
+    role: 'CLASS REPRESENTATIVE',
+    photo: '/assets/images/avatar/avatar-29.jpg',
+    roleColor: '#4CAF50',
+    roleIcon: FaUsers
+  }
+];
+
 const Students = () => {
   const [ref, inView] = useInView({
     triggerOnce: true,
@@ -360,6 +519,33 @@ const Students = () => {
           Discover the next generation of filmmakers, actors, and creative talents who are shaping the future of entertainment.
         </Subtitle>
       </PageHeader>
+      
+      <TeamSection>
+        <TeamGrid
+          as={motion.div}
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          {teamMembers.map((member) => (
+            <TeamCard 
+              key={member.id}
+              variants={itemVariants}
+              whileHover={{ y: -5 }}
+            >
+              <TeamMemberPhoto borderColor={member.roleColor}>
+                <img src={member.photo} alt={member.name} />
+              </TeamMemberPhoto>
+              <TeamMemberInfo>
+                <TeamMemberName>{member.name}</TeamMemberName>
+                <TeamMemberRole bgColor={`${member.roleColor}20`} textColor={member.roleColor}>
+                  <member.roleIcon /> {member.role}
+                </TeamMemberRole>
+              </TeamMemberInfo>
+            </TeamCard>
+          ))}
+        </TeamGrid>
+      </TeamSection>
       
       <StudentsGrid
         ref={ref}
